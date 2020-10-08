@@ -1,2 +1,2 @@
 # sopel-channelmgnt
-channelmgnt plug-in for sopel
+Channelmgnt plug-in for sopel
