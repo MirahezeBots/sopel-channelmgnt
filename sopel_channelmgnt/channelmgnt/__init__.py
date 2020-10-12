@@ -86,6 +86,8 @@ def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsaf
             time.sleep(1)
         if isusermode and not trigger.group(2) and selfsafe:
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
+        elif isusermode and not trigger.group(2) and trigger.account in chanops:
+            bot.write(['MODE', trigger.sender, mode, trigger.nick])
         elif isusermode and trigger.account in chanops:
             bot.write(['MODE', trigger.sender, mode, trigger.group(2)])
         elif isbqmode and trigger.account in chanops:
