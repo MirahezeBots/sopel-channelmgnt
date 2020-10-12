@@ -77,7 +77,7 @@ def get_chanops(channel, cachedjson):
     return chanops
 
 
-def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False):
+def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -90,7 +90,7 @@ def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False):
             bot.write(['MODE', trigger.sender, mode, trigger.group(2)])
         elif isbqmode and trigger.account in chanops:
             bot.write(['MODE', trigger.sender, mode, parse_host_mask(trigger.group().split())])
-        elif trigger.account in chanops:
+        elif trigger.account in chanops and selfsafe:
             bot.write(['MODE', trigger.sender, mode])
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
@@ -126,7 +126,7 @@ def deop(bot, trigger):
     """
     Command to deop users in a room. If no nick is given, Sopel will deop the nick who sent the command.
     """
-    makemodechange(bot, trigger, '-o', isusermode=True)
+    makemodechange(bot, trigger, '-o', isusermode=True, selfsafe=True)
 
 
 @require_chanmsg
@@ -146,7 +146,7 @@ def devoice(bot, trigger):
     """
     Command to devoice users in a room. If no nick is given, the nick who sent the command will be devoiced.
     """
-    makemodechange(bot, trigger, '-v', isusermode=True)
+    makemodechange(bot, trigger, '-v', isusermode=True, selfsafe=True)
 
 
 @require_chanmsg
