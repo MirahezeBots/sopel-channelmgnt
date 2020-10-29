@@ -2,7 +2,7 @@ from sopel_channelmgnt.channelmgnt import get_access
 from MirahezeBots_jsonparser import jsonparser as jp
 
 DATA = jp.createdict('tests/test_config.json')
-TEST_DATA_CHANNEL
+TEST_DATA_CHANNEL = "##test-channel"
 
 
 def test_simple():
