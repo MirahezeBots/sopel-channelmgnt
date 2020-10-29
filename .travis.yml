@@ -8,12 +8,13 @@ dist: xenial
 os: linux
 install:
 - pip install .
-- pip install flake8
+- pip install dev-requirements.txt
 before_script:
 - python --version
 - pip show sopel_plugins.channelmgnt
 script:
 - flake8 sopel_channelmgnt/channelmgnt --max-line-length 265 --exclude=__init__.py
+- pytest tests/test_access_from_json.py
 after_script:
 - pip freeze
 deploy:
