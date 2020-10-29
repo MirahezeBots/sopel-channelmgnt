@@ -1,6 +1,6 @@
 from sopel_channelmgnt.channelmgnt import get_access
 
-DATA = (open('test_config.json', 'r')).read()
+DATA = (open('tests/test_config.json', 'r')).read()
 
 
 def test_simple():
