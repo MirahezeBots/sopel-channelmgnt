@@ -4,8 +4,13 @@ python:
 - '3.7'
 - '3.8'
 - 3.8-dev
-dist: xenial
+- '3.9'
+- '3.9-dev'
 os: linux
+dist: focal
+group: edge
+arch: arm64-graviton2
+virt: lxd
 install:
 - pip install .
 - pip install flake8
