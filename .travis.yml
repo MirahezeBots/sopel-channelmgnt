@@ -14,6 +14,7 @@ before_script:
 - pip show sopel_plugins.channelmgnt
 script:
 - flake8 sopel_channelmgnt/channelmgnt --max-line-length 265 --exclude=__init__.py
+- flake8 tests --max-line-length 265
 - pytest tests/test_access_from_json.py
 after_script:
 - pip freeze
