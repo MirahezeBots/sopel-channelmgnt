@@ -79,6 +79,8 @@ def get_chanops(channel, cachedjson):
 
 def get_access(channel, json, account):
      chanops = get_chanops(channel, json)
+     if chanops is None:
+          raise Exception("Something has gone very wrong if you can get this message")
      if str(account).lower() in chanops:
           return True
      else:
