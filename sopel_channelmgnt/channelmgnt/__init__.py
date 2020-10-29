@@ -79,7 +79,7 @@ def get_chanops(channel, cachedjson):
 
 def get_access(channel, json, account):
      chanops = get_chanops(channel, json)
-     if str(trigger.account).lower in chanops:
+     if str(trigger.account).lower() in chanops:
           return True
      else:
           return False
@@ -88,7 +88,7 @@ def get_access(channel, json, account):
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
     auth = get_access(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"], trigger.account)
     if chanops:
-        if bot.channels[trigger.sender].privileges[bot.nick] < OP and str(trigger.account).lower() in chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and auth:
             bot.say('Attempting to OP...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
