@@ -13,14 +13,12 @@ arch: arm64-graviton2
 virt: lxd
 install:
 - pip install .
-- pip install -r dev-requirements.txt
+- pip install flake8
 before_script:
 - python --version
 - pip show sopel_plugins.channelmgnt
 script:
 - flake8 sopel_channelmgnt/channelmgnt --max-line-length 265 --exclude=__init__.py
-- flake8 tests --max-line-length 265
-- pytest tests/test_access_from_json.py
 after_script:
 - pip freeze
 deploy:
