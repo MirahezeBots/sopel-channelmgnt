@@ -79,7 +79,7 @@ def get_chanops(channel, cachedjson):
 
 def get_access(channel, json, account):
      chanops = get_chanops(channel, json)
-     if str(trigger.account).lower() in chanops:
+     if str(account).lower() in chanops:
           return True
      else:
           return False
