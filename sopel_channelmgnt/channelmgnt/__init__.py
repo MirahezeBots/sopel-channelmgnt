@@ -77,22 +77,32 @@ def get_chanops(channel, cachedjson):
     return chanops
 
 
+def get_access(channel, json, account):
+     chanops = get_chanops(channel, json)
+     if chanops is None:
+          raise Exception("Something has gone very wrong if you can get this message")
+     if str(account).lower() in chanops:
+          return True
+     else:
+          return False
+
+
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
-    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    auth = get_access(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"], trigger.account)
     if chanops:
-        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and auth:
             bot.say('Attempting to OP...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
         if isusermode and not trigger.group(2) and selfsafe:
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
-        elif isusermode and not trigger.group(2) and trigger.account in chanops:
+        elif isusermode and not trigger.group(2) and auth:
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
-        elif isusermode and trigger.account in chanops:
+        elif isusermode and auth:
             bot.write(['MODE', trigger.sender, mode, trigger.group(2)])
-        elif isbqmode and trigger.account in chanops:
+        elif isbqmode and auth:
             bot.write(['MODE', trigger.sender, mode, parse_host_mask(trigger.group().split())])
-        elif trigger.account in chanops:
+        elif auth:
             bot.write(['MODE', trigger.sender, mode])
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
