@@ -8,7 +8,7 @@ dist: xenial
 os: linux
 install:
 - pip install .
-- pip install dev-requirements.txt
+- pip install -r dev-requirements.txt
 before_script:
 - python --version
 - pip show sopel_plugins.channelmgnt
