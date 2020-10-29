@@ -1,6 +1,7 @@
 from sopel_channelmgnt.channelmgnt import get_access
+from MirahezeBots_jsonparser import jsonparser as jp
 
-DATA = (open('tests/test_config.json', 'r')).read()
+DATA = jp.createdict('tests/test_config.json')
 
 
 def test_simple():
