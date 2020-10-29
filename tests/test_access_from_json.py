@@ -15,5 +15,6 @@ def test_with_space():
 def test_with_number():
     assert get_access("##test-channel", DATA, "RhinosF1")
 
+
 def test_false():
     assert not get_access("##test-channel", DATA, "JohnLewis")
