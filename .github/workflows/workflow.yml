@@ -30,6 +30,7 @@ jobs:
         run: |
           flake8 sopel_channelmgnt/channelmgnt --max-line-length 265
           pytest tests
+          pytest test
       - name: Run pip freeze
         run: |
           pip freeze
