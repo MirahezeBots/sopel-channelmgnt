@@ -60,21 +60,12 @@ def chanopget(channeldata, chanopsjson):
         return chanops
 
 
-def channelparse(channel, cachedjson):
+def get_chanops(channel, cachedjson):
     if channel in cachedjson.keys():
-        channeldata = cachedjson[channel]
-        return channeldata, cachedjson
+        chanops = chanopget(channel, cachedjson)
+        return chanops
     else:
         return False
-
-
-def get_chanops(channel, cachedjson):
-    channeldata = channelparse(channel=channel, cachedjson=cachedjson)
-    if not channeldata:
-        chanops = False
-    else:
-        chanops = chanopget(channeldata[0], channeldata[1])
-    return chanops
 
 
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
