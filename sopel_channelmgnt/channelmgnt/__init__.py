@@ -12,7 +12,7 @@ import time
 
 from sopel import formatting
 from sopel.module import (
-    commands, example, priority, OP, require_chanmsg, require_admin
+    commands, example, priority, OP, require_chanmsg, require_admin, event
 )
 from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.tools import Identifier
@@ -85,6 +85,7 @@ def get_chanops(channel, cachedjson):
     else:
         chanops = chanopget(channeldata[0], channeldata[1])
     return chanops
+
 
 def get_log_channel(channel, cachedjson):
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
