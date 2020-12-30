@@ -14,15 +14,22 @@ from sopel import formatting
 from sopel.module import (
     commands, example, priority, OP, require_chanmsg, require_admin
 )
-from sopel.config.types import StaticSection, ValidatedAttribute
+from sopel.config.types import StaticSection, ValidatedAttribute, ListAttribute
 from sopel.tools import Identifier
 from MirahezeBots_jsonparser import jsonparser as jp
 from sopel.tools import SopelMemory
 
 
+BOLD = '\x02'
+GREEN = '\x0303'
+
+
 class ChannelmgntSection(StaticSection):
     datafile = ValidatedAttribute('datafile', str)
     support_channel = ValidatedAttribute('support_channel', str)
+    global_chanops = ListAttribute('global_chanops')
+    log_kicks = ValidatedAttribute('log_kicks', bool)
+    log_channel = ValidatedAttribute('log_channel', str)
 
 
 def setup(bot):
@@ -35,6 +42,9 @@ def configure(config):
     config.define_section('channelmgnt', ChannelmgntSection, validate=False)
     config.channelmgnt.configure_setting('datafile', 'Where is the datafile for channelmgnt?')
     config.channelmgnt.configure_setting('support_channel', 'What channel should users ask for help in?')
+    config.channelmgnt.configure_setting('global_chanops', 'If anybody, who should have chanop access in all channels? (if any then enter nickserv accounts)')
+    config.channelmgnt.configure_setting('log_kicks', 'Should kicks be logged to a channel? (true/false)')
+    config.channelmgnt.configure_setting('log_channel', 'If you said true to the previous question, then please provide the channel where kicks should be logged to')
 
 
 def default_mask(trigger):
@@ -86,13 +96,13 @@ def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsaf
             time.sleep(1)
         if isusermode and not trigger.group(2) and selfsafe:
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
-        elif isusermode and not trigger.group(2) and trigger.account in chanops:
+        elif isusermode and not trigger.group(2) and trigger.account in chanops or isusermode and not trigger.group(2) and trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
-        elif isusermode and trigger.account in chanops:
+        elif isusermode and trigger.account in chanops or isusermode and trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.write(['MODE', trigger.sender, mode, trigger.group(2)])
-        elif isbqmode and trigger.account in chanops:
+        elif isbqmode and trigger.account in chanops or isbqmode and trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.write(['MODE', trigger.sender, mode, parse_host_mask(trigger.group().split())])
-        elif trigger.account in chanops:
+        elif trigger.account in chanops or trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.write(['MODE', trigger.sender, mode])
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
@@ -159,7 +169,7 @@ def kick(bot, trigger):
     """Kick a user from the channel."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
-        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops or bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
@@ -178,7 +188,7 @@ def kick(bot, trigger):
             channel = opt
             reasonidx = 3
         reason = ' '.join(text[reasonidx:])
-        if nick != bot.config.core.nick and trigger.account in chanops:
+        if nick != bot.config.core.nick and trigger.account in chanops or trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.write(['KICK', channel, nick, ':' + reason])
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
@@ -263,7 +273,7 @@ def kickban(bot, trigger):
     """
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
-        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops or bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
@@ -289,7 +299,7 @@ def kickban(bot, trigger):
         mask = parse_host_mask(trigger.group().split())
         if mask == '':
             mask = nick + '!*@*'
-        if trigger.account in chanops:
+        if trigger.account in chanops or trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.write(['MODE', channel, '+b', mask])
             bot.write(['KICK', channel, nick, ':' + reason])
         else:
@@ -306,7 +316,7 @@ def topic(bot, trigger):
     """
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
-        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops or bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
@@ -330,7 +340,7 @@ def topic(bot, trigger):
                 len(args), narg)
             return bot.say(message)
         topic = mask.format(*args)
-        if trigger.account in chanops:
+        if trigger.account in chanops or trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.write(('TOPIC', channel + ' :' + topic))
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
@@ -346,7 +356,7 @@ def set_mask(bot, trigger):
     """
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
-        if trigger.account in chanops:
+        if trigger.account in chanops or trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.db.set_channel_value(trigger.sender, 'topic_mask', trigger.group(2))
             bot.say("Gotcha, " + trigger.account)
         else:
@@ -374,19 +384,25 @@ def invite_user(bot, trigger):
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     channel = trigger.sender
     if chanops:
-        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops or bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in bot.settings.channelmgnt.global_chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
             nick = trigger.group(2)
             if not nick:
                 bot.say(trigger.account + ": No user specified.", trigger.sender)
-            elif trigger.account in chanops:
+            elif trigger.account in chanops or trigger.account in bot.settings.channelmgnt.global_chanops:
                 bot.write(['INVITE', channel, nick])
             else:
                 bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+
+
+@event('KICK')
+def logKick(bot, trigger):
+    if bot.settings.channelmgnt.log_kicks is True:
+        bot.say('{1}{0}{1} was {2}kicked from {3} by {4} ({5}){2}'.format(trigger.args[1],BOLD,GREEN,trigger.args[0],trigger.nick,trigger.args[2]) , bot.settings.channelmgnt.log_channel)
 
 
 @require_admin(message="Only admins may purge cache.")
