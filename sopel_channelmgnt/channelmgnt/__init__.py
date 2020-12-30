@@ -12,7 +12,7 @@ import time
 
 from sopel import formatting
 from sopel.module import (
-    commands, example, priority, OP, require_chanmsg, require_admin
+    commands, example, priority, OP, require_chanmsg, require_admin, event
 )
 from sopel.config.types import StaticSection, ValidatedAttribute, ListAttribute
 from sopel.tools import Identifier
@@ -402,7 +402,7 @@ def invite_user(bot, trigger):
 @event('KICK')
 def logKick(bot, trigger):
     if bot.settings.channelmgnt.log_kicks is True:
-        bot.say('{1}{0}{1} was {2}kicked from {3} by {4} ({5}){2}'.format(trigger.args[1],BOLD,GREEN,trigger.args[0],trigger.nick,trigger.args[2]) , bot.settings.channelmgnt.log_channel)
+        bot.say('{1}{0}{1} was {2}kicked from {3} by {4} ({5}){2}'.format(trigger.args[1], BOLD, GREEN, trigger.args[0], trigger.nick, trigger.args[2]), bot.settings.channelmgnt.log_channel)
 
 
 @require_admin(message="Only admins may purge cache.")
