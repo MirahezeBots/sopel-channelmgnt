@@ -84,7 +84,7 @@ def get_chanops(channel, cachedjson):
         chanops = False
     else:
         chanops = chanopget(channeldata[0], channeldata[1])
-    return chanops'
+    return chanops
 
 def get_log_channel(channel, cachedjson):
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
@@ -92,7 +92,7 @@ def get_log_channel(channel, cachedjson):
         logging_channel = False
     else:
         logging_channel = logchanget(channeldata[0], channeldata[1])
-    return logging_channel'
+    return logging_channel
 
 
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
