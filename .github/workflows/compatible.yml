@@ -31,7 +31,7 @@ jobs:
         run: |
           python --version
           sopel --version
-          pip show MirahezeBot-Plugins
+          pip show sopel-plugins.channelmgnt
       - name: Check compatibility
         run: |
           pip check
