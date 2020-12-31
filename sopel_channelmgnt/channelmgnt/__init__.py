@@ -64,7 +64,7 @@ def chanopget(channeldata, chanopsjson):
         return chanops
 
 
-def logchanget(channeldata) {
+def logchanget(channeldata):
     log_channel = []
     if 'log_channel' in channeldata.keys():
         log_channel = log_channel + (channeldata["log_channel"])
@@ -96,7 +96,7 @@ def get_log_channel(channel, cachedjson):
     if not channeldata:
         logging_channel = False
     else:
-        logging_channel = logchanget(channeldata[0], channeldata[1])
+        logging_channel = logchanget(channeldata[0])
     return logging_channel
 
 
