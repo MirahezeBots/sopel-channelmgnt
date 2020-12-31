@@ -1,43 +1,50 @@
-# coding=utf-8
+"""channelmgnt.py - Sopel Channel Management Plugin."""
+
+import re
+import time
+
+from MirahezeBots_jsonparser import jsonparser as jp
+
+from sopel import formatting
+from sopel.config.types import StaticSection, ValidatedAttribute
+from sopel.module import (
+    OP, commands, example, priority, require_admin, require_chanmsg
+)
+from sopel.tools import Identifier
+from sopel.tools import SopelMemory
+
 """
-channelmgnt.py - Sopel Channel Management Plugin
 Modified from adminchannel.py - Sopel Channel Admin Module
 Copyright 2010-2011, Michael Yanovich, Alek Rollyson, and Elsie Powell
 Copyright © 2012, Elad Alfassa <elad@fedoraproject.org>
 Licensed under the Eiffel Forum License 2.
 https://sopel.chat
 """
-import re
-import time
-
-from sopel import formatting
-from sopel.module import (
-    commands, example, priority, OP, require_chanmsg, require_admin
-)
-from sopel.config.types import StaticSection, ValidatedAttribute
-from sopel.tools import Identifier
-from MirahezeBots_jsonparser import jsonparser as jp
-from sopel.tools import SopelMemory
 
 
 class ChannelmgntSection(StaticSection):
+    """Configuration class for channelmgnt."""
+
     datafile = ValidatedAttribute('datafile', str)
     support_channel = ValidatedAttribute('support_channel', str)
 
 
 def setup(bot):
+    """Set up config and bot memory for the plugin."""
     bot.config.define_section('channelmgnt', ChannelmgntSection)
     bot.memory["channelmgnt"] = SopelMemory()
     bot.memory["channelmgnt"]["jdcache"] = jp.createdict(bot.settings.channelmgnt.datafile)
 
 
 def configure(config):
+    """Define sopel config wizzard questions."""
     config.define_section('channelmgnt', ChannelmgntSection, validate=False)
     config.channelmgnt.configure_setting('datafile', 'Where is the datafile for channelmgnt?')
     config.channelmgnt.configure_setting('support_channel', 'What channel should users ask for help in?')
 
 
 def default_mask(trigger):
+    """Build default topic mask."""
     welcome = formatting.color('Welcome to:', formatting.colors.PURPLE)
     chan = formatting.color(trigger.sender, formatting.colors.TEAL)
     topic_ = formatting.bold('Topic:')
@@ -47,6 +54,7 @@ def default_mask(trigger):
 
 
 def chanopget(channel, chanopsjson):
+    """Get chanop data for the given channel."""
     chanops = []
     if 'inherits-from' in chanopsjson.keys():
         for inheritedChannel in chanopsjson["inherits-from"]:
@@ -57,6 +65,7 @@ def chanopget(channel, chanopsjson):
 
 
 def get_chanops(channel, cachedjson):
+    """Get json data for a specific channel."""
     if channel in cachedjson.keys():
         chanops = chanopget(channel, cachedjson)
         return chanops
@@ -65,6 +74,7 @@ def get_chanops(channel, cachedjson):
 
 
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
+    """Change the channel mode."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -92,9 +102,7 @@ def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsaf
 @commands('chanmode')
 @example('.chanmode +mz')
 def chanmode(bot, trigger):
-    """
-    Command to change channel mode.
-    """
+    """Command to change channel mode."""
     makemodechange(bot, trigger, trigger.group(2), isusermode=False)
 
 
@@ -102,9 +110,7 @@ def chanmode(bot, trigger):
 @commands('op')
 @example('.op Zppix')
 def op(bot, trigger):
-    """
-    Command to op users in a room. If no nick is given, Sopel will op the nick who sent the command.
-    """
+    """Command to op users in a room. If no nick is given, Sopel will op the nick who sent the command."""
     makemodechange(bot, trigger, '+o', isusermode=True)
 
 
@@ -112,9 +118,7 @@ def op(bot, trigger):
 @commands('deop')
 @example('.deop Zppix')
 def deop(bot, trigger):
-    """
-    Command to deop users in a room. If no nick is given, Sopel will deop the nick who sent the command.
-    """
+    """Command to deop users in a room. If no nick is given, Sopel will deop the nick who sent the command."""
     makemodechange(bot, trigger, '-o', isusermode=True, selfsafe=True)
 
 
@@ -122,9 +126,7 @@ def deop(bot, trigger):
 @commands('voice')
 @example('.voice Zppix')
 def voice(bot, trigger):
-    """
-    Command to voice users in a room. If no nick is given, Sopel will voice the nick who sent the command.
-    """
+    """Command to voice users in a room. If no nick is given, Sopel will voice the nick who sent the command."""
     makemodechange(bot, trigger, '+v', isusermode=True)
 
 
@@ -132,9 +134,7 @@ def voice(bot, trigger):
 @commands('devoice')
 @example('.devoice Zppix')
 def devoice(bot, trigger):
-    """
-    Command to devoice users in a room. If no nick is given, the nick who sent the command will be devoiced.
-    """
+    """Command to devoice users in a room. If no nick is given, the nick who sent the command will be devoiced."""
     makemodechange(bot, trigger, '-v', isusermode=True, selfsafe=True)
 
 
@@ -174,6 +174,7 @@ def kick(bot, trigger):
 
 
 def parse_host_mask(text):
+    """Identify hostmask."""
     argc = len(text)
     if argc < 2:
         return
@@ -209,8 +210,7 @@ def parse_host_mask(text):
 @priority('high')
 @example('.ban Zppix')
 def ban(bot, trigger):
-    """Ban a user from the channel. The bot must be a channel operator for this command to work.
-    """
+    """Ban a user from the channel. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '+b', isbqmode=True)
 
 
@@ -218,8 +218,7 @@ def ban(bot, trigger):
 @commands('unban')
 @example('.unban Zppix')
 def unban(bot, trigger):
-    """Unban a user from the channel. The bot must be a channel operator for this command to work.
-    """
+    """Unban a user from the channel. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '-b', isbqmode=True)
 
 
@@ -227,8 +226,7 @@ def unban(bot, trigger):
 @commands('quiet')
 @example('.quiet Zppix')
 def quiet(bot, trigger):
-    """Quiet a user. The bot must be a channel operator for this command to work.
-    """
+    """Quiet a user. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '+q', isbqmode=True)
 
 
@@ -236,8 +234,7 @@ def quiet(bot, trigger):
 @commands('unquiet')
 @example('.unquiet Zppix')
 def unquiet(bot, trigger):
-    """Unquiet a user. The bot must be a channel operator for this command to work.
-    """
+    """Unquiet a user. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '-q', isbqmode=True)
 
 
@@ -246,8 +243,7 @@ def unquiet(bot, trigger):
 @example('.kickban [#chan] user1 user!*@* get out of here')
 @priority('high')
 def kickban(bot, trigger):
-    """Kick and ban a user from the channel. The bot must be a channel operator for this command to work.
-    """
+    """Kick and ban a user from the channel. The bot must be a channel operator for this command to work."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -289,8 +285,7 @@ def kickban(bot, trigger):
 @commands('topic')
 @example('.topic Your Great New Topic')
 def topic(bot, trigger):
-    """Change the channel topic. The bot must be a channel operator for this command to work.
-    """
+    """Change the channel topic. The bot must be a channel operator for this command to work."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -329,8 +324,7 @@ def topic(bot, trigger):
 @commands('tmask')
 @example('.tmask Welcome to My Channel | Info: {}')
 def set_mask(bot, trigger):
-    """Set the topic mask to use for the current channel. Within the topic mask, {} is used to allow substituting in chunks of text. This mask is used when running the 'topic' command.
-    """
+    """Set the topic mask to use for the current channel. Within the topic mask, {} is used to allow substituting in chunks of text. This mask is used when running the 'topic' command."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     if chanops:
         if trigger.account in chanops:
@@ -355,9 +349,7 @@ def show_mask(bot, trigger):
 @require_chanmsg
 @commands('invite')
 def invite_user(bot, trigger):
-    """
-    Command to invite users to a room.
-    """
+    """Command to invite users to a room."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     channel = trigger.sender
     if chanops:
@@ -378,10 +370,8 @@ def invite_user(bot, trigger):
 
 @require_admin(message="Only admins may purge cache.")
 @commands('resetchanopcache')
-def reset_chanop_cache(bot, trigger):
-    """
-    Reset the cache of the channel management data file
-    """
+def reset_chanop_cache(bot):
+    """Reset the cache of the channel management data file."""
     bot.reply("Refreshing Cache...")
     bot.memory["channelmgnt"]["jdcache"] = jp.createdict(bot.settings.channelmgnt.datafile)
     bot.reply("Cache refreshed")
@@ -389,10 +379,8 @@ def reset_chanop_cache(bot, trigger):
 
 @require_admin(message="Only admins may check cache")
 @commands('checkchanopcache')
-def check_chanop_cache(bot, trigger):
-    """
-    Validate the cache matches the copy on disk
-    """
+def check_chanop_cache(bot):
+    """Validate the cache matches the copy on disk."""
     result = jp.validatecache(bot.settings.channelmgnt.datafile, bot.memory["channelmgnt"]["jdcache"])
     if result:
         bot.reply("Cache is correct.")
