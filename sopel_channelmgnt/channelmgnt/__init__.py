@@ -56,6 +56,7 @@ def default_mask(trigger):
 def chanopget(channel, chanopsjson, cachedjson):
     """Get chanop data for the given channel."""
     chanops = []
+    cachedjson = {}
     if 'inherits-from' in chanopsjson.keys():
         for inheritedChannel in chanopsjson["inherits-from"]:
             chanops = chanops + chanopget(channel=inheritedChannel, cachedjson=chanopsjson)["chanops"]
