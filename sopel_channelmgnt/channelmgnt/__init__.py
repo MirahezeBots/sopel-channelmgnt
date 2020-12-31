@@ -53,7 +53,7 @@ def default_mask(trigger):
     return '{} {} {} {}'.format(welcome, chan, topic_, arg)
 
 
-def chanopget(channel, chanopsjson, cachedjson):
+def chanopget(channel, chanopsjson):
     """Get chanop data for the given channel."""
     chanops = []
     cachedjson = {}
