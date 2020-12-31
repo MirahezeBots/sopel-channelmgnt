@@ -33,7 +33,7 @@ jobs:
           pip show sopel_plugins.channelmgnt
       - name: Run tests
         run: |
-          flake8 . --max-line-length 265
+          flake8 . --max-line-length 265 --exclude=sopel_channelmgnt/__init__.py
           pytest .
           bandit sopel_channelmgnt -r
           pip-missing-reqs
