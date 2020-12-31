@@ -8,7 +8,7 @@ from MirahezeBots_jsonparser import jsonparser as jp
 from sopel import formatting
 from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.module import (
-     OP, commands, event, example, priority, require_admin, require_chanmsg
+    OP, commands, event, example, priority, require_admin, require_chanmsg
 )
 from sopel.tools import Identifier
 from sopel.tools import SopelMemory
