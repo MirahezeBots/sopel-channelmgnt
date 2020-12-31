@@ -413,7 +413,7 @@ def invite_user(bot, trigger):
 
 
 @event('KICK')
-def logKick(bot, trigger):
+def log_kick(bot, trigger):
     if bot.settings.channelmgnt.log_kicks is True:
         logging_channel = get_log_channel(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
         if logging_channel:
