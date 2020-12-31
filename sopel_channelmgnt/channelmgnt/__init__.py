@@ -73,7 +73,7 @@ def chanopget(channeldata, chanopsjson):
 
 
 def logchanget(channeldata):
-     """Get logging channel for the given channel."""
+    """Get logging channel for the given channel."""
     log_channel = []
     if 'log_channel' in channeldata.keys():
         log_channel = log_channel + (channeldata["log_channel"])
