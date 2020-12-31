@@ -37,6 +37,10 @@ def configure(config):
     config.channelmgnt.configure_setting('support_channel', 'What channel should users ask for help in?')
 
 
+BOLD = '\x02'
+GREEN = '\x0303'
+
+
 def default_mask(trigger):
     welcome = formatting.color('Welcome to:', formatting.colors.PURPLE)
     chan = formatting.color(trigger.sender, formatting.colors.TEAL)
