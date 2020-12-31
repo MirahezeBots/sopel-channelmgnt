@@ -103,7 +103,7 @@ def get_chanops(channel, cachedjson):
 
 
 def get_log_channel(channel, cachedjson):
-     """Get logging channel for the given channel."""
+    """Get logging channel for the given channel."""
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
         logging_channel = False
@@ -409,7 +409,7 @@ def invite_user(bot, trigger):
 
 @event('KICK')
 def log_kick(bot, trigger):
-     """Log blocks to a certain channel if specified in json."""
+    """Log blocks to a certain channel if specified in json."""
     if bot.settings.channelmgnt.log_kicks is True:
         logging_channel = get_log_channel(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
         if logging_channel:
