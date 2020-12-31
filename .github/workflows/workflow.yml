@@ -36,8 +36,8 @@ jobs:
           flake8 . --max-line-length 265 --exclude=sopel_channelmgnt/__init__.py
           pytest .
           bandit sopel_channelmgnt -r
-          pip-missing-reqs
-          pip-extra-reqs
+          pip-missing-reqs .
+          pip-extra-reqs .
           pip check
       - name: Run pip freeze and pipdeptree
         run: |
