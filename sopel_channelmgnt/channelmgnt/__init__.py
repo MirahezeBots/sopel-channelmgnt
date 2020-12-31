@@ -1,12 +1,5 @@
 """channelmgnt.py - Sopel Channel Management Plugin."""
 
-"""
-Modified from adminchannel.py - Sopel Channel Admin Module
-Copyright 2010-2011, Michael Yanovich, Alek Rollyson, and Elsie Powell
-Copyright © 2012, Elad Alfassa <elad@fedoraproject.org>
-Licensed under the Eiffel Forum License 2.
-https://sopel.chat
-"""
 import re
 import time
 
@@ -20,23 +13,31 @@ from sopel.module import (
 from sopel.tools import Identifier
 from sopel.tools import SopelMemory
 
+"""
+Modified from adminchannel.py - Sopel Channel Admin Module
+Copyright 2010-2011, Michael Yanovich, Alek Rollyson, and Elsie Powell
+Copyright © 2012, Elad Alfassa <elad@fedoraproject.org>
+Licensed under the Eiffel Forum License 2.
+https://sopel.chat
+"""
+
 
 class ChannelmgntSection(StaticSection):
     """Configuration class for channelmgnt."""
-    
+
     datafile = ValidatedAttribute('datafile', str)
     support_channel = ValidatedAttribute('support_channel', str)
 
 
 def setup(bot):
-    """setup the plugin (bot memory, and config)."""
+    """Set up config and bot memory for the plugin."""
     bot.config.define_section('channelmgnt', ChannelmgntSection)
     bot.memory["channelmgnt"] = SopelMemory()
     bot.memory["channelmgnt"]["jdcache"] = jp.createdict(bot.settings.channelmgnt.datafile)
 
 
 def configure(config):
-    """define sopel config wizzard questions."""
+    """Define sopel config wizzard questions."""
     config.define_section('channelmgnt', ChannelmgntSection, validate=False)
     config.channelmgnt.configure_setting('datafile', 'Where is the datafile for channelmgnt?')
     config.channelmgnt.configure_setting('support_channel', 'What channel should users ask for help in?')
@@ -187,7 +188,7 @@ def kick(bot, trigger):
 
 
 def parse_host_mask(text):
-    """Identify hostmask"""
+    """Identify hostmask."""
     argc = len(text)
     if argc < 2:
         return
@@ -383,7 +384,7 @@ def invite_user(bot, trigger):
 
 @require_admin(message="Only admins may purge cache.")
 @commands('resetchanopcache')
-def reset_chanop_cache(bot, trigger):
+def reset_chanop_cache(bot):
     """Reset the cache of the channel management data file."""
     bot.reply("Refreshing Cache...")
     bot.memory["channelmgnt"]["jdcache"] = jp.createdict(bot.settings.channelmgnt.datafile)
