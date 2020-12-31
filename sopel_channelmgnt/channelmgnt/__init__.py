@@ -8,7 +8,7 @@ from MirahezeBots_jsonparser import jsonparser as jp
 from sopel import formatting
 from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.module import (
-     OP, commands, example, priority, require_admin, require_chanmsg, event
+     OP, commands, event, example, priority, require_admin, require_chanmsg
 )
 from sopel.tools import Identifier
 from sopel.tools import SopelMemory
@@ -73,6 +73,7 @@ def chanopget(channeldata, chanopsjson):
 
 
 def logchanget(channeldata):
+     """Get logging channel for the given channel."""
     log_channel = []
     if 'log_channel' in channeldata.keys():
         log_channel = log_channel + (channeldata["log_channel"])
@@ -102,6 +103,7 @@ def get_chanops(channel, cachedjson):
 
 
 def get_log_channel(channel, cachedjson):
+     """Get logging channel for the given channel."""
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
         logging_channel = False
@@ -407,6 +409,7 @@ def invite_user(bot, trigger):
 
 @event('KICK')
 def log_kick(bot, trigger):
+     """Log blocks to a certain channel if specified in json."""
     if bot.settings.channelmgnt.log_kicks is True:
         logging_channel = get_log_channel(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
         if logging_channel:
