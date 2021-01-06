@@ -384,7 +384,7 @@ def invite_user(bot, trigger):
 
 @require_admin(message="Only admins may purge cache.")
 @commands('resetchanopcache')
-def reset_chanop_cache(bot, trigger): # noqa: U100
+def reset_chanop_cache(bot, trigger):  # noqa: U100
     """Reset the cache of the channel management data file."""
     bot.reply("Refreshing Cache...")
     bot.memory["channelmgnt"]["jdcache"] = jp.createdict(bot.settings.channelmgnt.datafile)
@@ -393,7 +393,7 @@ def reset_chanop_cache(bot, trigger): # noqa: U100
 
 @require_admin(message="Only admins may check cache")
 @commands('checkchanopcache')
-def check_chanop_cache(bot, trigger): # noqa: U100
+def check_chanop_cache(bot, trigger):  # noqa: U100
     """Validate the cache matches the copy on disk."""
     result = jp.validatecache(bot.settings.channelmgnt.datafile, bot.memory["channelmgnt"]["jdcache"])
     if result:
