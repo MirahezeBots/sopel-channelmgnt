@@ -61,7 +61,7 @@ def chanopget(channeldata, chanopsjson):
     """Get chanop data for the given channel."""
     chanops = []
     if 'default' in chanopsjson.keys():
-        defaultops = channelparse(channel=default, cachedjson=chanopsjson)
+        defaultops = channelparse(channel='default', cachedjson=chanopsjson)
         chanops = chanops + defaultops
     if 'inherits-from' in channeldata.keys():
         for x in channeldata["inherits-from"]:
