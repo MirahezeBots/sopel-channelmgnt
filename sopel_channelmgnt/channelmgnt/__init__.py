@@ -409,7 +409,7 @@ def invite_user(bot, trigger):
             elif trigger.account in chanops:
                 bot.write(['INVITE', channel, nick])
                 if deop:
-                    deop(trigger.sender, bot)
+                    deopbot(trigger.sender, bot)
             else:
                 bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
