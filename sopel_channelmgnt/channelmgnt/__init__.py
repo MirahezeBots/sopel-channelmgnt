@@ -317,9 +317,7 @@ def kickban(bot, trigger):
 
 def get_mask(bot, channel, default):
     """Get mask for given channel."""
-    mask = bot.db.get_channel_value(channel, 'topic_mask') or default
-    mask = mask.replace('%s', '{}')
-    return mask
+    return (bot.db.get_channel_value(channel, 'topic_mask') or default).replace('%s', '{}')
 
 
 @require_chanmsg
