@@ -90,7 +90,6 @@ def get_chanops(channel, cachedjson):
 def deopbot(chan, bot):
     """Deop the bot in the given channel."""
     bot.write(['MODE', chan, '-o', bot.nick])
-    return
 
 
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
