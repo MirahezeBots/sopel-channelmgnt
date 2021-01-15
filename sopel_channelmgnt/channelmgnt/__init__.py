@@ -88,6 +88,7 @@ def get_chanops(channel, cachedjson):
 
 
 def deop(chan, bot):
+    """deop the bot in the given channel"""
     bot.write(['MODE', chan, '-o', bot.nick])
     return
 
@@ -408,7 +409,7 @@ def invite_user(bot, trigger):
             elif trigger.account in chanops:
                 bot.write(['INVITE', channel, nick])
                 if deop:
-                deop(trigger.sender, bot)
+                    deop(trigger.sender, bot)
             else:
                 bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
