@@ -95,6 +95,7 @@ def deopbot(chan, bot):
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
     """Change the channel mode."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Attempting to OP...')
@@ -172,6 +173,7 @@ def devoice(bot, trigger):
 def kick(bot, trigger):
     """Kick a user from the channel."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
@@ -275,6 +277,7 @@ def unquiet(bot, trigger):
 def kickban(bot, trigger):
     """Kick and ban a user from the channel. The bot must be a channel operator for this command to work."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
@@ -325,6 +328,7 @@ def get_mask(bot, channel, default):
 def topic(bot, trigger):
     """Change the channel topic. The bot must be a channel operator for this command to work."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
@@ -389,6 +393,7 @@ def invite_user(bot, trigger):
     """Command to invite users to a room."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     channel = trigger.sender
+    dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
