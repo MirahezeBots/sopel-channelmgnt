@@ -317,10 +317,10 @@ def kickban(bot, trigger):
 
 
 def getMask(bot, channel):
-    """Get mask for given channel"""
+    """Get mask for given channel."""
     mask = None
     mask = bot.db.get_channel_value(channel, 'topic_mask')
-    mask = mask or default_mask(trigger)
+    mask = mask or default
     mask = mask.replace('%s', '{}')
 
 
@@ -341,7 +341,7 @@ def topic(bot, trigger):
             return
         channel = trigger.sender.lower()
 
-        mask = getMask(bot, channel)
+        mask = getMask(bot, channel, default_mask(trigger))
         narg = len(re.findall('{}', mask))
 
         top = trigger.group(2)
