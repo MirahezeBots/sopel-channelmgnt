@@ -316,12 +316,12 @@ def kickban(bot, trigger):
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
 
 
-def getMask(bot)
+def getMask(bot, channel):
+    """Get mask for given channel"""
     mask = None
     mask = bot.db.get_channel_value(channel, 'topic_mask')
     mask = mask or default_mask(trigger)
     mask = mask.replace('%s', '{}')
-    
 
 
 @require_chanmsg
@@ -341,7 +341,7 @@ def topic(bot, trigger):
             return
         channel = trigger.sender.lower()
 
-        mask = getMask(bot)
+        mask = getMask(bot, channel)
         narg = len(re.findall('{}', mask))
 
         top = trigger.group(2)
