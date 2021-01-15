@@ -102,7 +102,7 @@ def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsaf
             time.sleep(1)
             dodeop = True
         if (isusermode and not trigger.group(2) and selfsafe
-            or isusermode and not trigger.group(2) and trigger.account in chanops):
+           or isusermode and not trigger.group(2) and trigger.account in chanops):
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
             if dodeop:
                 deopbot(trigger.sender, bot)
@@ -346,9 +346,9 @@ def topic(bot, trigger):
             message = "Not enough arguments. You gave {}, it requires {}.".format(
                 len(args), narg)
             return bot.say(message)
-        topic = mask.format(*args)
+        topictext = mask.format(*args)
         if trigger.account in chanops:
-            bot.write(('TOPIC', channel + ' :' + topic))
+            bot.write(('TOPIC', channel + ' :' + topictext))
             if dodeop:
                 deopbot(trigger.sender, bot)
         else:
