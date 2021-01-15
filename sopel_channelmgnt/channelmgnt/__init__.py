@@ -102,11 +102,7 @@ def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsaf
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
             deop = True
-        if isusermode and not trigger.group(2) and selfsafe:
-            bot.write(['MODE', trigger.sender, mode, trigger.nick])
-            if deop:
-                deopbot(trigger.sender, bot)
-        elif isusermode and not trigger.group(2) and trigger.account in chanops:
+        if isusermode and not trigger.group(2) and selfsafe or isusermode and not trigger.group(2) and trigger.account in chanops:
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
             if deop:
                 deopbot(trigger.sender, bot)
@@ -403,14 +399,14 @@ def invite_user(bot, trigger):
             time.sleep(1)
             deop = True
             nick = trigger.group(2)
-            if not nick:
-                bot.say(trigger.account + ": No user specified.", trigger.sender)
-            elif trigger.account in chanops:
-                bot.write(['INVITE', channel, nick])
-                if deop:
-                    deopbot(trigger.sender, bot)
-            else:
-                bot.reply('Access Denied. If in error, please contact the channel founder.')
+        if not nick:
+            bot.say(trigger.account + ": No user specified.", trigger.sender)
+        elif trigger.account in chanops:
+            bot.write(['INVITE', channel, nick])
+            if deop:
+                deopbot(trigger.sender, bot)
+        else:
+            bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
 
