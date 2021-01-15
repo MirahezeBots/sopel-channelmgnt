@@ -96,13 +96,13 @@ def deop(chan, bot):
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
     """Change the channel mode."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
-    deop = false
+    deop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Attempting to OP...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
-            deop = true
+            deop = True
         if isusermode and not trigger.group(2) and selfsafe:
             bot.write(['MODE', trigger.sender, mode, trigger.nick])
             if deop:
@@ -177,13 +177,13 @@ def devoice(bot, trigger):
 def kick(bot, trigger):
     """Kick a user from the channel."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
-    deop = false
+    deop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
-            deop = true
+            deop = True
         text = trigger.group().split()
         argc = len(text)
         if argc < 2:
@@ -281,13 +281,13 @@ def unquiet(bot, trigger):
 def kickban(bot, trigger):
     """Kick and ban a user from the channel. The bot must be a channel operator for this command to work."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
-    deop = false
+    deop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
-            deop = true
+            deop = True
         text = trigger.group().split()
         argc = len(text)
         if argc < 3:
@@ -327,13 +327,13 @@ def kickban(bot, trigger):
 def topic(bot, trigger):
     """Change the channel topic. The bot must be a channel operator for this command to work."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
-    deop = false
+    deop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
-            deop = true
+            deop = True
         if not trigger.group(2):
             return
         channel = trigger.sender.lower()
@@ -396,13 +396,13 @@ def invite_user(bot, trigger):
     """Command to invite users to a room."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     channel = trigger.sender
-    deop = false
+    deop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
             bot.say('op ' + trigger.sender, 'ChanServ')
             time.sleep(1)
-            deop = true
+            deop = True
             nick = trigger.group(2)
             if not nick:
                 bot.say(trigger.account + ": No user specified.", trigger.sender)
