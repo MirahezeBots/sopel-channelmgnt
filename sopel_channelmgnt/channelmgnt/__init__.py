@@ -316,6 +316,14 @@ def kickban(bot, trigger):
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
 
 
+def getMask(bot)
+    mask = None
+    mask = bot.db.get_channel_value(channel, 'topic_mask')
+    mask = mask or default_mask(trigger)
+    mask = mask.replace('%s', '{}')
+    
+
+
 @require_chanmsg
 @commands('topic')
 @example('.topic Your Great New Topic')
@@ -333,16 +341,12 @@ def topic(bot, trigger):
             return
         channel = trigger.sender.lower()
 
-        mask = None
-        mask = bot.db.get_channel_value(channel, 'topic_mask')
-        mask = mask or default_mask(trigger)
-        mask = mask.replace('%s', '{}')
+        mask = getMask(bot)
         narg = len(re.findall('{}', mask))
 
         top = trigger.group(2)
         args = []
-        if top:
-            args = top.split('~', narg)
+        args = top.split('~', narg)
 
         if len(args) != narg:
             message = "Not enough arguments. You gave {}, it requires {}.".format(
