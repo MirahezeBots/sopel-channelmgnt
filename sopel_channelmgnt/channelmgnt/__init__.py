@@ -53,26 +53,23 @@ def default_mask(trigger):
     return '{} {} {} {}'.format(welcome, chan, topic_, arg)
 
 
-def chanopget(channeldata, chanopsjson):
+def chanopget(channel, chanopsjson):
     """Get chanop data for the given channel."""
     chanops = []
-    if 'inherits-from' in channeldata.keys():
-        for x in channeldata["inherits-from"]:
-            y = channelparse(channel=x, cachedjson=chanopsjson)
-            chanops = chanops + y[0]["chanops"]
-    if 'chanops' in channeldata.keys():
+    cachedjson = {}
+    if 'inherits-from' in chanopsjson.keys():
+        for inheritedChannel in chanopsjson["inherits-from"]:
+            chanops = chanops + chanopget(channel=inheritedChannel, cachedjson=chanopsjson)["chanops"]
+    if 'chanops' in chanopsjson.keys():
         chanops = chanops + (channeldata["chanops"])
-    if chanops == []:
-        return False
-    else:
-        return chanops
+    return chanops
 
 
-def channelparse(channel, cachedjson):
+def get_chanops(channel, cachedjson):
     """Get json data for a specific channel."""
     if channel in cachedjson.keys():
-        channeldata = cachedjson[channel]
-        return channeldata, cachedjson
+        chanops = chanopget(channel, cachedjson)
+        return chanops
     else:
         return False
 
