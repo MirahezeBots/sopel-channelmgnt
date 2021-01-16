@@ -82,8 +82,7 @@ def logchanget(channeldata):
         log_channel = log_channel + (channeldata["log_channel"])
     if log_channel == []:
         return False
-    else:
-        return log_channel
+    return log_channel
 
 
 def channelparse(channel, cachedjson):
