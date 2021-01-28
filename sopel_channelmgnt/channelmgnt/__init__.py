@@ -27,6 +27,7 @@ class ChannelmgntSection(StaticSection):
 
     datafile = ValidatedAttribute('datafile', str)
     support_channel = ValidatedAttribute('support_channel', str)
+    forwardchan = ValidatedAttribute('forwardchan', str)
 
 
 def setup(bot):
@@ -41,6 +42,7 @@ def configure(config):
     config.define_section('channelmgnt', ChannelmgntSection, validate=False)
     config.channelmgnt.configure_setting('datafile', 'Where is the datafile for channelmgnt?')
     config.channelmgnt.configure_setting('support_channel', 'What channel should users ask for help in?')
+    config.channelmgnt.configure_setting('forwardchan', 'What channel should users be forwarded to, for fix your connection bans?')
 
 
 def default_mask(trigger):
@@ -421,7 +423,6 @@ def fyckb(bot, trigger):
     """Kick and ban a user from the channel, forwards user to specified channel until unbanned. The bot must be a channel operator for this command to work."""
     chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
     dodeop = False
-    forwardchan = "##fix_your_connection"
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
             bot.say('Please wait...')
@@ -451,7 +452,7 @@ def fyckb(bot, trigger):
         if mask == '':
             mask = nick + '!*@*'
         if trigger.account in chanops:
-            bot.write(['MODE', channel, '+b', mask + '$' + forwardchan])
+            bot.write(['MODE', channel, '+b', mask + '${}'.format(bot.settings.channelmgnt.support_channel)])
             bot.write(['KICK', channel, nick, ':' + reason])
             if dodeop:
                 deopbot(trigger.sender, bot)
