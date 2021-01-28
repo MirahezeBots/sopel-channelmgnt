@@ -435,7 +435,7 @@ def fyckb(bot, trigger):
             return
         opt = Identifier(text[1])
         nick = opt
-        mask = text[2] if any([s in text[2] for s in "!@*"]) else ''
+        mask = text[2] if any(s in text[2] for s in "!@*") else ''
         channel = trigger.sender
         reasonidx = 3 if mask != '' else 2
         if not opt.is_nick():
@@ -444,7 +444,7 @@ def fyckb(bot, trigger):
                 return
             channel = opt
             nick = text[2]
-            mask = text[3] if any([s in text[3] for s in "!@*"]) else ''
+            mask = text[3] if any(s in text[3] for s in "!@*") else ''
             reasonidx = 4 if mask != '' else 3
         reason = ' '.join(text[reasonidx:])
         mask = parse_host_mask(trigger.group().split())
