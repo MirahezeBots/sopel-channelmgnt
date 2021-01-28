@@ -412,6 +412,7 @@ def invite_user(bot, trigger):
     else:
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
 
+
 @require_chanmsg
 @commands('fyc', 'fixconnection')
 @example('.fyc [#chan] user1 user!*@*')
