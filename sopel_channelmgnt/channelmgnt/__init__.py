@@ -412,6 +412,53 @@ def invite_user(bot, trigger):
     else:
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
 
+@require_chanmsg
+@commands('fyc', 'fixconnection')
+@example('.fyc [#chan] user1 user!*@*')
+@priority('high')
+def fyckb(bot, trigger):
+    """Kick and ban a user from the channel, forwards user to specified channel until unbanned. The bot must be a channel operator for this command to work."""
+    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    dodeop = False
+    forwardchan = "##fix_your_connection"
+    if chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
+            bot.say('Please wait...')
+            bot.say('op ' + trigger.sender, 'ChanServ')
+            time.sleep(1)
+            dodeop = True
+        text = trigger.group().split()
+        argc = len(text)
+        if argc < 3:
+            bot.reply('Syntax is: .fyc <nick> <reason>')
+            return
+        opt = Identifier(text[1])
+        nick = opt
+        mask = text[2] if any([s in text[2] for s in "!@*"]) else ''
+        channel = trigger.sender
+        reasonidx = 3 if mask != '' else 2
+        if not opt.is_nick():
+            if argc < 5:
+                bot.reply('Syntax is: .fyc <nick> <reason>')
+                return
+            channel = opt
+            nick = text[2]
+            mask = text[3] if any([s in text[3] for s in "!@*"]) else ''
+            reasonidx = 4 if mask != '' else 3
+        reason = ' '.join(text[reasonidx:])
+        mask = parse_host_mask(trigger.group().split())
+        if mask == '':
+            mask = nick + '!*@*'
+        if trigger.account in chanops:
+            bot.write(['MODE', channel, '+b', mask + '$' + forwardchan])
+            bot.write(['KICK', channel, nick, ':' + reason])
+            if dodeop:
+                deopbot(trigger.sender, bot)
+        else:
+            bot.reply('Access Denied. If in error, please contact the channel founder.')
+    else:
+        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+
 
 @require_admin(message="Only admins may purge cache.")
 @commands('resetchanopcache')
