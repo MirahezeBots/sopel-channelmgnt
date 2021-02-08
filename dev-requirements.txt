@@ -9,5 +9,5 @@ flake8-unused-arguments==0.0.6
 pipdeptree==2.0.0
 wheel>=0.36.2,<0.37.0
 packaging>=20.8
-build==0.1.0
+build==0.2.0
 bandit==1.7.0
