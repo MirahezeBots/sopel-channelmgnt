@@ -437,7 +437,7 @@ def log_kick(bot, trigger):
     if bot.settings.channelmgnt.log_kicks is True:
         logging_channel = get_log_channel(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
         if logging_channel:
-            bot.say(f'{sopel.formatting.bold(trigger.args[1])} was {sopel.formatting.color(f'kicked from {trigger.args[0]} by {trigger.nick} ({trigger.args[2]})')}', fg=GREEN), bot.settings.channelmgnt.log_channel)
+            bot.say(f'{sopel.formatting.bold(trigger.args[1])} was {sopel.formatting.color(text=f'kicked from {trigger.args[0]} by {trigger.nick} ({trigger.args[2]})')}', fg='GREEN'), bot.settings.channelmgnt.log_channel)
 
 
 @require_admin(message="Only admins may purge cache.")
