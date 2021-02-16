@@ -33,7 +33,7 @@ jobs:
           pip show sopel_plugins.channelmgnt
       - name: Run tests
         run: |
-          flake8 . --max-line-length 265 --exclude=sopel_channelmgnt/__init__.py
+          flake8 .
           pytest .
           bandit sopel_channelmgnt -r
           pip-missing-reqs --ignore-file=setup.py --ignore-module=pytest --ignore-module=MirahezeBots.* . --ignore-file=tests/*
