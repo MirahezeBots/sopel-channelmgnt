@@ -77,10 +77,10 @@ def logchanget(channeldata, chanopsjson):
     if 'default' in chanopsjson.keys():
         defaultchan = channelparse(channel='default', cachedjson=chanopsjson)
         if 'log_channel' in defaultchan.keys():
-            log_channel = log_channel + (defaultchan['log_channel'])
+            log_channel = (defaultchan['log_channel'])
             return log_channel
-    elif 'log_channel' in channeldata.keys():
-        log_channel = log_channel + (channeldata['log_channel'])
+    if 'log_channel' in channeldata.keys():
+        log_channel = (channeldata['log_channel'])
     if log_channel == []:
         return False
     return log_channel
