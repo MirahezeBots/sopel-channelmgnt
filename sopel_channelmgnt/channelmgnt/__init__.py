@@ -214,21 +214,21 @@ def parse_host_mask(text):
         if mask == '*!*@*':
             return mask
         if re.match('^[^.@!/]+$', mask) is not None:
-            return '%s!*@*' % mask
+            return f'{mask}!*@*'
         if re.match('^[^@!]+$', mask) is not None:
-            return '*!*@%s' % mask
+            return f'*!*@{mask}'
 
         m = re.match('^([^!@]+)@$', mask)
         if m is not None:
-            return '*!%s@*' % m.group(1)
+            return f'*!{m.group(1)}@*'
 
         m = re.match('^([^!@]+)@([^@!]+)$', mask)
         if m is not None:
-            return '*!%s@%s' % (m.group(1), m.group(2))
+            return f'*!{m.group(1)}@{m.group(2)}'
 
         m = re.match('^([^!@]+)!(^[!@]+)@?$', mask)
         if m is not None:
-            return '%s!%s@*' % (m.group(1), m.group(2))
+            return f'{m.group(1)}!{m.group(2)}@*'
 
         if re.match(r'^\S+[!]\S+[@]\S+$', mask) is not None:
             return mask
