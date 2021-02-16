@@ -231,6 +231,7 @@ def parse_host_mask(text):
         if m is not None:
             return f'{m.group(1)}!{m.group(2)}@*'
         return ''
+    return None
 
 
 @require_chanmsg
@@ -286,8 +287,11 @@ def kickban(bot, trigger):
             bot.reply('Syntax is: .kickban <nick> <reason>')
             return
         opt = Identifier(text[1])
-        nick = opt
-        mask = text[2] if any([s in text[2] for s in '!@*']) else ''
+        nick = opt 
+        if any([s in text[2] for s in '!@*']):
+            mask = text[2]
+        else:
+            mask = ''
         channel = trigger.sender
         reasonidx = 3 if mask != '' else 2
         if not opt.is_nick():
@@ -295,8 +299,11 @@ def kickban(bot, trigger):
                 bot.reply('Syntax is: .kickban <nick> <reason>')
                 return
             channel = opt
-            nick = text[2]
-            mask = text[3] if any([s in text[3] for s in '!@*']) else ''
+            nick = text[2] 
+            if any([s in text[3] for s in '!@*']):
+                mask = text[3]
+            else:
+                mask = ''
             reasonidx = 4 if mask != '' else 3
         reason = ' '.join(text[reasonidx:])
         mask = parse_host_mask(trigger.group().split())
@@ -396,7 +403,7 @@ def invite_user(bot, trigger):
             dodeop = True
             nick = trigger.group(2)
         if not nick:
-            bot.say(trigger.account + ": No user specified.", trigger.sender)
+            bot.say(f'{trigger.account}: No user specified.', trigger.sender)
         elif trigger.account in chanops:
             bot.write(['INVITE', channel, nick])
             if dodeop:
