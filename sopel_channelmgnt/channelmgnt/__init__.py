@@ -258,8 +258,8 @@ def parse_host_mask(text):
 
         if re.match(r'^\S+[!]\S+[@]\S+$', mask) is not None:
             return mask
-    return ''
-
+        return ''
+    return None
 
 @require_chanmsg
 @commands('ban')
