@@ -9,7 +9,6 @@ from sopel import formatting
 from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.module import (
     OP, commands, event, example, priority, require_admin, require_chanmsg
-
 )
 from sopel.tools import Identifier
 from sopel.tools import SopelMemory
@@ -82,10 +81,10 @@ def logchanget(channeldata, chanopsjson):
     if 'default' in chanopsjson.keys():
         defaultchan = channelparse(channel='default', cachedjson=chanopsjson)
         if 'log_channel' in defaultchan.keys():
-            log_channel = log_channel + (defaultchan["log_channel"])
+            log_channel = log_channel + (defaultchan['log_channel'])
             return log_channel
     elif 'log_channel' in channeldata.keys():
-        log_channel = log_channel + (channeldata["log_channel"])
+        log_channel = log_channel + (channeldata['log_channel'])
     if log_channel == []:
         return False
     return log_channel
@@ -112,10 +111,8 @@ def get_log_channel(channel, cachedjson):
     """Get logging channel for the given channel."""
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
-        logging_channel = False
-    else:
-        logging_channel = logchanget(channeldata[0], channeldata[1])
-    return logging_channel
+        Return False
+    return logchanget(channeldata[0], channeldata[1])
 
 
 def deopbot(chan, bot):
