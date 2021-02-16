@@ -435,13 +435,13 @@ def invite_user(bot, trigger):
 def log_kick(bot, trigger):
     """Log blocks to a certain channel if specified in json."""
     if bot.settings.channelmgnt.log_kicks is True:
-        logging_channel = get_log_channel(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+        logging_channel = get_log_channel(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
         greentext = f'kicked from {trigger.args[0]} by {trigger.nick} ({trigger.args[2]})'
         if logging_channel:
-            bot.say(f'{sopel.formatting.bold(trigger.args[1])} was {sopel.formatting.color(text=greentext, fg="GREEN")}', logging_channel)
+            bot.say(f'{formatting.bold(trigger.args[1])} was {formatting.color(text=greentext, fg="GREEN")}', logging_channel)
 
 
-@require_admin(message="Only admins may purge cache.")
+@require_admin(message='Only admins may purge cache.')
 @commands('resetchanopcache')
 def reset_chanop_cache(bot, trigger):  # noqa: U100
     """Reset the cache of the channel management data file."""
