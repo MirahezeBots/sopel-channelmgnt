@@ -8,7 +8,7 @@ from MirahezeBots_jsonparser import jsonparser as jp
 from sopel import formatting
 from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.module import (
-    OP, commands, example, priority, require_admin, require_chanmsg
+    OP, commands, example, priority, require_admin, require_chanmsg,
 )
 from sopel.tools import Identifier
 from sopel.tools import SopelMemory
@@ -33,8 +33,8 @@ class ChannelmgntSection(StaticSection):
 def setup(bot):
     """Set up config and bot memory for the plugin."""
     bot.config.define_section('channelmgnt', ChannelmgntSection)
-    bot.memory["channelmgnt"] = SopelMemory()
-    bot.memory["channelmgnt"]["jdcache"] = jp.createdict(bot.settings.channelmgnt.datafile)
+    bot.memory['channelmgnt'] = SopelMemory()
+    bot.memory['channelmgnt']['jdcache'] = jp.createdict(bot.settings.channelmgnt.datafile)
 
 
 def configure(config):
@@ -52,18 +52,18 @@ def default_mask(trigger):
     topic_ = formatting.bold('Topic:')
     topic_ = formatting.color('| ' + topic_, formatting.colors.PURPLE)
     arg = formatting.color('{}', formatting.colors.GREEN)
-    return '{} {} {} {}'.format(welcome, chan, topic_, arg)
+    return f'{welcome} {chan} {topic_} {arg}'
 
 
 def chanopget(channeldata, chanopsjson):
     """Get chanop data for the given channel."""
     chanops = []
     if 'inherits-from' in channeldata.keys():
-        for x in channeldata["inherits-from"]:
+        for x in channeldata['inherits-from']:
             y = channelparse(channel=x, cachedjson=chanopsjson)
-            chanops = chanops + y[0]["chanops"]
+            chanops = chanops + y[0]['chanops']
     if 'chanops' in channeldata.keys():
-        chanops = chanops + (channeldata["chanops"])
+        chanops = chanops + (channeldata['chanops'])
     if chanops == []:
         return False
     else:
@@ -83,10 +83,8 @@ def get_chanops(channel, cachedjson):
     """Get chanop data for the provided channel."""
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
-        chanops = False
-    else:
-        chanops = chanopget(channeldata[0], channeldata[1])
-    return chanops
+        return False
+    return chanopget(channeldata[0], channeldata[1])
 
 
 def deopbot(chan, bot):
@@ -96,7 +94,7 @@ def deopbot(chan, bot):
 
 def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsafe=False):
     """Change the channel mode."""
-    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
     dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -125,7 +123,7 @@ def makemodechange(bot, trigger, mode, isusermode=False, isbqmode=False, selfsaf
             bot.reply('Access Denied. If in error, please contact the channel founder.')
 
     else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 @require_chanmsg
@@ -174,7 +172,7 @@ def devoice(bot, trigger):
 @example('.kick Zppix')
 def kick(bot, trigger):
     """Kick a user from the channel."""
-    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
     dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -204,39 +202,38 @@ def kick(bot, trigger):
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 def parse_host_mask(text):
     """Identify hostmask."""
     argc = len(text)
-    if argc < 2:
-        return
-    opt = Identifier(text[1])
-    mask = opt
-    if not opt.is_nick():
-        if argc < 3:
-            return
+    if argc > 2:
+        opt = Identifier(text[1])
+        mask = opt
+        if not opt.is_nick() and argc < 3:
+            return None
         mask = text[2]
-    if mask == '*!*@*':
-        return mask
-    if re.match('^[^.@!/]+$', mask) is not None:
-        return '%s!*@*' % mask
-    if re.match('^[^@!]+$', mask) is not None:
-        return '*!*@%s' % mask
+        if mask == '*!*@*':
+            return mask
+        if re.match('^[^.@!/]+$', mask) is not None:
+            return f'{mask}!*@*'
+        if re.match('^[^@!]+$', mask) is not None:
+            return f'*!*@{mask}'
 
-    m = re.match('^([^!@]+)@$', mask)
-    if m is not None:
-        return '*!%s@*' % m.group(1)
+        m = re.match('^([^!@]+)@$', mask)
+        if m is not None:
+            return f'*!{m.group(1)}@*'
 
-    m = re.match('^([^!@]+)@([^@!]+)$', mask)
-    if m is not None:
-        return '*!%s@%s' % (m.group(1), m.group(2))
+        m = re.match('^([^!@]+)@([^@!]+)$', mask)
+        if m is not None:
+            return f'*!{m.group(1)}@{m.group(2)}'
 
-    m = re.match('^([^!@]+)!(^[!@]+)@?$', mask)
-    if m is not None:
-        return '%s!%s@*' % (m.group(1), m.group(2))
-    return ''
+        m = re.match('^([^!@]+)!(^[!@]+)@?$', mask)
+        if m is not None:
+            return f'{m.group(1)}!{m.group(2)}@*'
+        return ''
+    return None
 
 
 @require_chanmsg
@@ -278,7 +275,7 @@ def unquiet(bot, trigger):
 @priority('high')
 def kickban(bot, trigger):
     """Kick and ban a user from the channel. The bot must be a channel operator for this command to work."""
-    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
     dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -293,7 +290,7 @@ def kickban(bot, trigger):
             return
         opt = Identifier(text[1])
         nick = opt
-        mask = text[2] if any([s in text[2] for s in "!@*"]) else ''
+        mask = text[2] if any(s in text[2] for s in '!@*') else ''
         channel = trigger.sender
         reasonidx = 3 if mask != '' else 2
         if not opt.is_nick():
@@ -302,7 +299,7 @@ def kickban(bot, trigger):
                 return
             channel = opt
             nick = text[2]
-            mask = text[3] if any([s in text[3] for s in "!@*"]) else ''
+            mask = text[3] if any(s in text[3] for s in '!@*') else ''
             reasonidx = 4 if mask != '' else 3
         reason = ' '.join(text[reasonidx:])
         mask = parse_host_mask(trigger.group().split())
@@ -316,7 +313,7 @@ def kickban(bot, trigger):
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 def get_mask(bot, channel, default):
@@ -329,7 +326,7 @@ def get_mask(bot, channel, default):
 @example('.topic Your Great New Topic')
 def topic(bot, trigger):
     """Change the channel topic. The bot must be a channel operator for this command to work."""
-    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
     dodeop = False
     if chanops:
         if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
@@ -338,7 +335,7 @@ def topic(bot, trigger):
             time.sleep(1)
             dodeop = True
         if not trigger.group(2):
-            return
+            return None
         channel = trigger.sender.lower()
 
         mask = get_mask(bot, channel, default_mask(trigger))
@@ -349,8 +346,7 @@ def topic(bot, trigger):
         args = top.split('~', narg)
 
         if len(args) != narg:
-            message = "Not enough arguments. You gave {}, it requires {}.".format(
-                len(args), narg)
+            message = f'Not enough arguments. You gave {args}, it requires {narg}.'
             return bot.say(message)
         topictext = mask.format(*args)
         if trigger.account in chanops:
@@ -358,25 +354,24 @@ def topic(bot, trigger):
             if dodeop:
                 deopbot(trigger.sender, bot)
         else:
-            bot.reply('Access Denied. If in error, please contact the channel founder.')
-    else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+            return bot.reply('Access Denied. If in error, please contact the channel founder.')
+    return bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 @require_chanmsg
 @commands('tmask')
 @example('.tmask Welcome to My Channel | Info: {}')
 def set_mask(bot, trigger):
-    """Set the topic mask to use for the current channel. Within the topic mask, {} is used to allow substituting in chunks of text. This mask is used when running the 'topic' command."""
-    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    """Set the topic mask to use for the current channel."""
+    chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
     if chanops:
         if trigger.account in chanops:
             bot.db.set_channel_value(trigger.sender, 'topic_mask', trigger.group(2))
-            bot.say("Gotcha, " + trigger.account)
+            bot.say(f'Gotcha, {trigger.account}')
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 @require_chanmsg
@@ -393,7 +388,7 @@ def show_mask(bot, trigger):
 @commands('invite')
 def invite_user(bot, trigger):
     """Command to invite users to a room."""
-    chanops = get_chanops(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
+    chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
     channel = trigger.sender
     dodeop = False
     if chanops:
@@ -404,7 +399,7 @@ def invite_user(bot, trigger):
             dodeop = True
             nick = trigger.group(2)
         if not nick:
-            bot.say(trigger.account + ": No user specified.", trigger.sender)
+            bot.say(f'{trigger.account}: No user specified.', trigger.sender)
         elif trigger.account in chanops:
             bot.write(['INVITE', channel, nick])
             if dodeop:
@@ -412,7 +407,7 @@ def invite_user(bot, trigger):
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 @require_chanmsg
@@ -462,21 +457,20 @@ def fyckb(bot, trigger):
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
 
 
-@require_admin(message="Only admins may purge cache.")
+@require_admin(message='Only admins may purge cache.')
 @commands('resetchanopcache')
 def reset_chanop_cache(bot, trigger):  # noqa: U100
     """Reset the cache of the channel management data file."""
-    bot.reply("Refreshing Cache...")
-    bot.memory["channelmgnt"]["jdcache"] = jp.createdict(bot.settings.channelmgnt.datafile)
-    bot.reply("Cache refreshed")
+    bot.reply('Refreshing Cache...')
+    bot.memory['channelmgnt']['jdcache'] = jp.createdict(bot.settings.channelmgnt.datafile)
+    bot.reply('Cache refreshed')
 
 
-@require_admin(message="Only admins may check cache")
+@require_admin(message='Only admins may check cache')
 @commands('checkchanopcache')
 def check_chanop_cache(bot, trigger):  # noqa: U100
     """Validate the cache matches the copy on disk."""
-    result = jp.validatecache(bot.settings.channelmgnt.datafile, bot.memory["channelmgnt"]["jdcache"])
+    result = jp.validatecache(bot.settings.channelmgnt.datafile, bot.memory['channelmgnt']['jdcache'])
     if result:
-        bot.reply("Cache is correct.")
-    else:
-        bot.reply("Cache does not match on-disk copy")
+        return bot.reply('Cache is correct.')
+    return bot.reply('Cache does not match on-disk copy')
