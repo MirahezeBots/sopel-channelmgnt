@@ -8,7 +8,7 @@ from MirahezeBots_jsonparser import jsonparser as jp
 from sopel import formatting
 from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.module import (
-    OP, commands, event, example, priority, require_admin, require_chanmsg
+    OP, commands, event, example, priority, require_admin, require_chanmsg,
 )
 from sopel.tools import Identifier
 from sopel.tools import SopelMemory
@@ -41,10 +41,6 @@ def configure(config):
     config.define_section('channelmgnt', ChannelmgntSection, validate=False)
     config.channelmgnt.configure_setting('datafile', 'Where is the datafile for channelmgnt?')
     config.channelmgnt.configure_setting('support_channel', 'What channel should users ask for help in?')
-
-
-BOLD = '\x02'
-GREEN = '\x0303'
 
 
 def default_mask(trigger):
@@ -111,7 +107,7 @@ def get_log_channel(channel, cachedjson):
     """Get logging channel for the given channel."""
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
-        Return False
+        return False
     return logchanget(channeldata[0], channeldata[1])
 
 
@@ -441,7 +437,7 @@ def log_kick(bot, trigger):
     if bot.settings.channelmgnt.log_kicks is True:
         logging_channel = get_log_channel(str(trigger.sender), bot.memory["channelmgnt"]["jdcache"])
         if logging_channel:
-            bot.say('{1}{0}{1} was {2}kicked from {3} by {4} ({5}){2}'.format(trigger.args[1], BOLD, GREEN, trigger.args[0], trigger.nick, trigger.args[2]), bot.settings.channelmgnt.log_channel)
+            bot.say(f'{sopel.formatting.bold(trigger.args[1])} was {sopel.formatting.color(f'kicked from {trigger.args[0]} by {trigger.nick} ({trigger.args[2]})')}', fg=GREEN), bot.settings.channelmgnt.log_channel)
 
 
 @require_admin(message="Only admins may purge cache.")
