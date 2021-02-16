@@ -206,33 +206,31 @@ def kick(bot, trigger):
 def parse_host_mask(text):
     """Identify hostmask."""
     argc = len(text)
-    if argc < 2:
-        return
-    opt = Identifier(text[1])
-    mask = opt
-    if not opt.is_nick():
-        if argc < 3:
-            return
+    if argc > 2:
+        opt = Identifier(text[1])
+        mask = opt
+        if not opt.is_nick() and argc < 3:
+            return None
         mask = text[2]
-    if mask == '*!*@*':
-        return mask
-    if re.match('^[^.@!/]+$', mask) is not None:
-        return f'{mask}!*@*'
-    if re.match('^[^@!]+$', mask) is not None:
-        return f'*!*@{mask}'
+        if mask == '*!*@*':
+            return mask
+        if re.match('^[^.@!/]+$', mask) is not None:
+            return f'{mask}!*@*'
+        if re.match('^[^@!]+$', mask) is not None:
+            return f'*!*@{mask}'
 
-    m = re.match('^([^!@]+)@$', mask)
-    if m is not None:
-        return f'*!{m.group(1)}@*'
+        m = re.match('^([^!@]+)@$', mask)
+        if m is not None:
+            return f'*!{m.group(1)}@*'
 
-    m = re.match('^([^!@]+)@([^@!]+)$', mask)
-    if m is not None:
-        return f'*!{m.group(1)}@{m.group(2)}'
+        m = re.match('^([^!@]+)@([^@!]+)$', mask)
+        if m is not None:
+            return f'*!{m.group(1)}@{m.group(2)}'
 
-    m = re.match('^([^!@]+)!(^[!@]+)@?$', mask)
-    if m is not None:
-        return f'{m.group(1)}!{m.group(2)}@*'
-    return ''
+        m = re.match('^([^!@]+)!(^[!@]+)@?$', mask)
+        if m is not None:
+            return f'{m.group(1)}!{m.group(2)}@*'
+        return ''
 
 
 @require_chanmsg
@@ -334,7 +332,7 @@ def topic(bot, trigger):
             time.sleep(1)
             dodeop = True
         if not trigger.group(2):
-            return
+            return None
         channel = trigger.sender.lower()
 
         mask = get_mask(bot, channel, default_mask(trigger))
@@ -345,8 +343,7 @@ def topic(bot, trigger):
         args = top.split('~', narg)
 
         if len(args) != narg:
-            message = "Not enough arguments. You gave {}, it requires {}.".format(
-                len(args), narg)
+            message = f'Not enough arguments. You gave {args}, it requires {narg}.'
             return bot.say(message)
         topictext = mask.format(*args)
         if trigger.account in chanops:
@@ -355,14 +352,14 @@ def topic(bot, trigger):
                 deopbot(trigger.sender, bot)
         else:
             return bot.reply('Access Denied. If in error, please contact the channel founder.')
-    return bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+    return bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 @require_chanmsg
 @commands('tmask')
 @example('.tmask Welcome to My Channel | Info: {}')
 def set_mask(bot, trigger):
-    """Set the topic mask to use for the current channel. Within the topic mask, {} is used to allow substituting in chunks of text. This mask is used when running the 'topic' command."""
+    """Set the topic mask to use for the current channel."""
     chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
     if chanops:
         if trigger.account in chanops:
@@ -371,7 +368,7 @@ def set_mask(bot, trigger):
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 @require_chanmsg
@@ -410,7 +407,7 @@ def invite_user(bot, trigger):
         bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
-@require_admin(message="Only admins may purge cache.")
+@require_admin(message='Only admins may purge cache.')
 @commands('resetchanopcache')
 def reset_chanop_cache(bot, trigger):  # noqa: U100
     """Reset the cache of the channel management data file."""
@@ -419,7 +416,7 @@ def reset_chanop_cache(bot, trigger):  # noqa: U100
     bot.reply('Cache refreshed')
 
 
-@require_admin(message="Only admins may check cache")
+@require_admin(message='Only admins may check cache')
 @commands('checkchanopcache')
 def check_chanop_cache(bot, trigger):  # noqa: U100
     """Validate the cache matches the copy on disk."""
