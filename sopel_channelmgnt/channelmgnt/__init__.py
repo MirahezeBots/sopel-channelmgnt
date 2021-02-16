@@ -211,8 +211,6 @@ def parse_host_mask(text):
         if not opt.is_nick() and argc < 3:
             return None
         mask = text[2]
-        if mask == '*!*@*':
-            return mask
         if re.match('^[^.@!/]+$', mask) is not None:
             return f'{mask}!*@*'
         if re.match('^[^@!]+$', mask) is not None:
