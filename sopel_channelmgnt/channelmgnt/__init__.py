@@ -208,7 +208,6 @@ def parse_host_mask(text):
     argc = len(text)
     if argc > 2:
         opt = Identifier(text[1])
-        mask = opt
         if not opt.is_nick() and argc < 3:
             return None
         mask = text[2]
