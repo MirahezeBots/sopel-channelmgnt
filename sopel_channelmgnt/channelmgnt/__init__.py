@@ -211,24 +211,28 @@ def parse_host_mask(text):
         if not opt.is_nick() and argc < 3:
             return None
         mask = text[2]
+        if mask == '*!*@*':
+            return mask
         if re.match('^[^.@!/]+$', mask) is not None:
-            return f'{mask}!*@*'
+            return '%s!*@*' % mask
         if re.match('^[^@!]+$', mask) is not None:
-            return f'*!*@{mask}'
+            return '*!*@%s' % mask
 
         m = re.match('^([^!@]+)@$', mask)
         if m is not None:
-            return f'*!{m.group(1)}@*'
+            return '*!%s@*' % m.group(1)
 
         m = re.match('^([^!@]+)@([^@!]+)$', mask)
         if m is not None:
-            return f'*!{m.group(1)}@{m.group(2)}'
+            return '*!%s@%s' % (m.group(1), m.group(2))
 
         m = re.match('^([^!@]+)!(^[!@]+)@?$', mask)
         if m is not None:
-            return f'{m.group(1)}!{m.group(2)}@*'
-        return ''
-    return None
+            return '%s!%s@*' % (m.group(1), m.group(2))
+
+        if re.match(r'^\S+[!]\S+[@]\S+$', mask) is not None:
+            return mask
+    return ''
 
 
 @require_chanmsg
