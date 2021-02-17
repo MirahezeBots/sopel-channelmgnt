@@ -308,6 +308,8 @@ def kickban(bot, trigger):
         argc = len(text)
         if argc < 3:
             bot.reply('Syntax is: .kickban <nick> <reason>')
+            if dodeop:
+                deopbot(trigger.sender, bot)
             return
         nick = Identifier(text[1])
         mask = text[2] if any(s in text[2] for s in '!@*') else ''
@@ -358,6 +360,8 @@ def topic(bot, trigger):
 
         if len(args) != narg:
             message = f'Not enough arguments. You gave {args}, it requires {narg}.'
+            if dodeop:
+                deopbot(trigger.sender, bot)
             return bot.say(message)
         topictext = mask.format(*args)
         if trigger.account in chanops:
