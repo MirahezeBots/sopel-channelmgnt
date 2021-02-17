@@ -27,6 +27,7 @@ class ChannelmgntSection(StaticSection):
 
     datafile = ValidatedAttribute('datafile', str)
     support_channel = ValidatedAttribute('support_channel', str)
+    forwardchan = ValidatedAttribute('forwardchan', str)
 
 
 def setup(bot):
@@ -41,6 +42,7 @@ def configure(config):
     config.define_section('channelmgnt', ChannelmgntSection, validate=False)
     config.channelmgnt.configure_setting('datafile', 'Where is the datafile for channelmgnt?')
     config.channelmgnt.configure_setting('support_channel', 'What channel should users ask for help in?')
+    config.channelmgnt.configure_setting('forwardchan', 'What channel should users be forwarded to, for fix your connection bans?')
 
 
 def default_mask(trigger):
@@ -212,19 +214,10 @@ def kick(bot, trigger):
         argc = len(text)
         if argc < 2:
             return
-        opt = Identifier(text[1])
-        nick = opt
-        channel = trigger.sender
-        reasonidx = 2
-        if not opt.is_nick():
-            if argc < 3:
-                return
-            nick = text[2]
-            channel = opt
-            reasonidx = 3
-        reason = ' '.join(text[reasonidx:])
+        nick = Identifier(text[1])
+        reason = ' '.join(text[2:])
         if nick != bot.config.core.nick and trigger.account in chanops:
-            bot.write(['KICK', channel, nick, ':' + reason])
+            bot.write(['KICK', trigger.sender, nick, ':' + reason])
             if dodeop:
                 deopbot(trigger.sender, bot)
         else:
@@ -299,7 +292,7 @@ def unquiet(bot, trigger):
 
 @require_chanmsg
 @commands('kickban', 'kb')
-@example('.kickban [#chan] user1 user!*@* get out of here')
+@example('.kickban user1 user!*@* get out of here')
 @priority('high')
 def kickban(bot, trigger):
     """Kick and ban a user from the channel. The bot must be a channel operator for this command to work."""
@@ -316,26 +309,16 @@ def kickban(bot, trigger):
         if argc < 3:
             bot.reply('Syntax is: .kickban <nick> <reason>')
             return
-        opt = Identifier(text[1])
-        nick = opt
+        nick = Identifier(text[1])
         mask = text[2] if any(s in text[2] for s in '!@*') else ''
-        channel = trigger.sender
         reasonidx = 3 if mask != '' else 2
-        if not opt.is_nick():
-            if argc < 5:
-                bot.reply('Syntax is: .kickban <nick> <reason>')
-                return
-            channel = opt
-            nick = text[2]
-            mask = text[3] if any(s in text[3] for s in '!@*') else ''
-            reasonidx = 4 if mask != '' else 3
         reason = ' '.join(text[reasonidx:])
         mask = parse_host_mask(trigger.group().split())
         if mask == '':
             mask = nick + '!*@*'
         if trigger.account in chanops:
-            bot.write(['MODE', channel, '+b', mask])
-            bot.write(['KICK', channel, nick, ':' + reason])
+            bot.write(['MODE', trigger.sender, '+b', mask])
+            bot.write(['KICK', trigger.sender, nick, ':' + reason])
             if dodeop:
                 deopbot(trigger.sender, bot)
         else:
@@ -434,6 +417,34 @@ def invite_user(bot, trigger):
                 deopbot(trigger.sender, bot)
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
+    else:
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
+
+
+@require_chanmsg
+@commands('fyc', 'fixconnection')
+@example('.fyc nick')
+@priority('high')
+def fyckb(bot, trigger):
+    """Ban a user from the channel, forwards user to specified channel until unbanned. The bot must be a channel operator for this command to work."""
+    chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
+    dodeop = False
+    if chanops:
+        if bot.channels[trigger.sender].privileges[bot.nick] < OP and trigger.account in chanops:
+            bot.say('Please wait...')
+            bot.say('op ' + trigger.sender, 'ChanServ')
+            time.sleep(1)
+            dodeop = True
+            text = trigger.group().split()
+            nick = Identifier(text[1])
+            mask = parse_host_mask(text)
+            if mask == '':
+                mask = nick + '!*@*'
+            bot.write(['MODE', trigger.sender, '+b', f'{mask}${bot.settings.channelmgnt.forwardchan}'])
+        else:
+            bot.reply('Access Denied. If in error, please contact the channel founder.')
+        if dodeop:
+            deopbot(trigger.sender, bot)
     else:
         bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
