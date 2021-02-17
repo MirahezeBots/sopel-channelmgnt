@@ -68,8 +68,7 @@ def chanopget(channeldata, chanopsjson):
         chanops = chanops + (channeldata['chanops'])
     if chanops == []:
         return False
-    else:
-        return chanops
+    return chanops
 
 
 def logchanget(channeldata, chanopsjson):
@@ -91,8 +90,7 @@ def channelparse(channel, cachedjson):
     if channel in cachedjson.keys():
         channeldata = cachedjson[channel]
         return channeldata, cachedjson
-    else:
-        return False
+    return False
 
 
 def get_chanops(channel, cachedjson):
@@ -243,7 +241,7 @@ def parse_host_mask(text):
         mask = opt
         if not opt.is_nick() and argc < 3:
             return None
-        elif not opt.is_nick():
+        if not opt.is_nick():
             mask = text[2]
         if re.match('^[^.@!/]+$', mask) is not None:
             return f'{mask}!*@*'
