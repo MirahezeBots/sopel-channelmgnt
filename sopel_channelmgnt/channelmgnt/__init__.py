@@ -79,7 +79,6 @@ def logchanget(channeldata, chanopsjson):
         defaultchan = channelparse(channel='default', cachedjson=chanopsjson)
         if 'log_channel' in defaultchan[0].keys():
             log_channel = (defaultchan[0]['log_channel'])
-            return log_channel
     if 'log_channel' in channeldata.keys():
         log_channel = (channeldata['log_channel'])
     if log_channel == []:
@@ -239,7 +238,7 @@ def kick(bot, trigger):
 def parse_host_mask(text):
     """Identify hostmask."""
     argc = len(text)
-    if argc > 2:
+    if argc >= 2:
         opt = Identifier(text[1])
         if not opt.is_nick() and argc < 3:
             return None
@@ -263,6 +262,7 @@ def parse_host_mask(text):
 
         return ''
     return None
+
 
 @require_chanmsg
 @commands('ban')
