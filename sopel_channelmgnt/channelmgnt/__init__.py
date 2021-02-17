@@ -110,10 +110,10 @@ def get_log_channel(channel, cachedjson):
     """Get logging channel for the given channel."""
     channeldata = channelparse(channel='default', cachedjson=cachedjson)
     if not channeldata:
-        return False
         defaultchan = channelparse(channel=channel, cachedjson=cachedjson)
         if 'log_channel' in defaultchan[0].keys():
             return (defaultchan[0]['log_channel'])
+        return False
     return logchanget(channeldata[0], channeldata[1])
 
 
@@ -243,7 +243,7 @@ def parse_host_mask(text):
         mask = opt
         if not opt.is_nick() and argc < 3:
             return None
-        else:
+        elif not opt.is_nick():
             mask = text[2]
         if re.match('^[^.@!/]+$', mask) is not None:
             return f'{mask}!*@*'
