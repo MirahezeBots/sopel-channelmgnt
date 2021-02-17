@@ -37,8 +37,8 @@ jobs:
           flake8 .
           pytest .
           bandit sopel_channelmgnt -r
-          pip-missing-reqs --ignore-file=setup.py --ignore-module=pytest --ignore-module=MirahezeBots.* . --ignore-file=tests/* --ignore-requirement=wheel
-          pip-extra-reqs .
+          pip-missing-reqs --ignore-file=setup.py --ignore-module=pytest --ignore-module=MirahezeBots.* . --ignore-file=tests/*
+          pip-extra-reqs . --ignore-requirement=wheel
           pip check
       - name: Run pip freeze and pipdeptree
         run: |
