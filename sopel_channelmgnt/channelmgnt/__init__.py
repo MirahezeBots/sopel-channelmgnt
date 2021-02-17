@@ -215,7 +215,7 @@ def kick(bot, trigger):
         if argc < 2:
             return
         nick = Identifier(text[1])
-        reason = ' '.join(text[reasonidx:])
+        reason = ' '.join(text[2:])
         if nick != bot.config.core.nick and trigger.account in chanops:
             bot.write(['KICK', trigger.sender, nick, ':' + reason])
             if dodeop:
@@ -438,7 +438,6 @@ def fyckb(bot, trigger):
             text = trigger.group().split()
             nick = Identifier(text[1])
             mask = text[2] if any(s in text[2] for s in '!@*') else ''
-            reasonidx = 3 if mask != '' else 2
             mask = parse_host_mask(text)
             if mask == '':
                 mask = nick + '!*@*'
