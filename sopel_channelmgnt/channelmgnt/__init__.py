@@ -8,7 +8,7 @@ from MirahezeBots_jsonparser import jsonparser as jp
 from sopel import formatting
 from sopel.config.types import StaticSection, ValidatedAttribute
 from sopel.module import (
-    OP, commands, example, priority, require_admin, require_chanmsg,
+    OP, commands, event, example, priority, require_admin, require_chanmsg,
 )
 from sopel.tools import Identifier
 from sopel.tools import SopelMemory
@@ -58,6 +58,10 @@ def default_mask(trigger):
 def chanopget(channeldata, chanopsjson):
     """Get chanop data for the given channel."""
     chanops = []
+    if 'default' in chanopsjson.keys():
+        defaultops = channelparse(channel='default', cachedjson=chanopsjson)
+        if 'chanops' in defaultops[0].keys():
+            chanops = chanops + defaultops[0]['chanops']
     if 'inherits-from' in channeldata.keys():
         for x in channeldata['inherits-from']:
             y = channelparse(channel=x, cachedjson=chanopsjson)
@@ -66,8 +70,21 @@ def chanopget(channeldata, chanopsjson):
         chanops = chanops + (channeldata['chanops'])
     if chanops == []:
         return False
-    else:
-        return chanops
+    return chanops
+
+
+def logchanget(channeldata, chanopsjson):
+    """Get logging channel for the given channel."""
+    log_channel = []
+    if 'default' in chanopsjson.keys():
+        defaultchan = channelparse(channel='default', cachedjson=chanopsjson)
+        if 'log_channel' in defaultchan[0].keys():
+            log_channel = (defaultchan[0]['log_channel'])
+    if 'log_channel' in channeldata.keys():
+        log_channel = (channeldata['log_channel'])
+    if log_channel == []:
+        return False
+    return log_channel
 
 
 def channelparse(channel, cachedjson):
@@ -75,16 +92,29 @@ def channelparse(channel, cachedjson):
     if channel in cachedjson.keys():
         channeldata = cachedjson[channel]
         return channeldata, cachedjson
-    else:
-        return False
+    return False
 
 
 def get_chanops(channel, cachedjson):
     """Get chanop data for the provided channel."""
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
+        defaultops = channelparse(channel='default', cachedjson=cachedjson)
+        if 'chanops' in defaultops[0].keys():
+            return defaultops[0]['chanops']
         return False
     return chanopget(channeldata[0], channeldata[1])
+
+
+def get_log_channel(channel, cachedjson):
+    """Get logging channel for the given channel."""
+    channeldata = channelparse(channel='default', cachedjson=cachedjson)
+    if not channeldata:
+        defaultchan = channelparse(channel=channel, cachedjson=cachedjson)
+        if 'log_channel' in defaultchan[0].keys():
+            return defaultchan[0]['log_channel']
+        return False
+    return logchanget(channeldata[0], channeldata[1])
 
 
 def deopbot(chan, bot):
@@ -208,14 +238,13 @@ def kick(bot, trigger):
 def parse_host_mask(text):
     """Identify hostmask."""
     argc = len(text)
-    if argc > 2:
+    if argc >= 2:
         opt = Identifier(text[1])
         mask = opt
         if not opt.is_nick() and argc < 3:
             return None
-        mask = text[2]
-        if mask == '*!*@*':
-            return mask
+        if not opt.is_nick():
+            mask = text[2]
         if re.match('^[^.@!/]+$', mask) is not None:
             return f'{mask}!*@*'
         if re.match('^[^@!]+$', mask) is not None:
@@ -232,6 +261,7 @@ def parse_host_mask(text):
         m = re.match('^([^!@]+)!(^[!@]+)@?$', mask)
         if m is not None:
             return f'{m.group(1)}!{m.group(2)}@*'
+
         return ''
     return None
 
@@ -455,6 +485,15 @@ def fyckb(bot, trigger):
             bot.reply('Access Denied. If in error, please contact the channel founder.')
     else:
         bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+
+
+@event('KICK')
+def log_kick(bot, trigger):
+    """Log blocks to a certain channel if specified in json."""
+    logging_channel = get_log_channel(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
+    greentext = f'kicked from {trigger.args[0]} by {trigger.nick} ({trigger.args[2]})'
+    if logging_channel:
+        bot.say(f'{formatting.bold(trigger.args[1])} was {formatting.color(text=greentext, fg="GREEN")}', logging_channel)
 
 
 @require_admin(message='Only admins may purge cache.')
