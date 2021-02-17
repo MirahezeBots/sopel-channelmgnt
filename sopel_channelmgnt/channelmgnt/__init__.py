@@ -455,27 +455,25 @@ def fyckb(bot, trigger):
             time.sleep(1)
             dodeop = True
             text = trigger.group().split()
-            argc = len(text)
             nick = Identifier(text[1])
             mask = text[2] if any(s in text[2] for s in '!@*') else ''
             channel = trigger.sender
             reasonidx = 3 if mask != '' else 2
             if not nick.is_nick():
-                channel = opt
+                channel = nick
                 nick = text[2]
                 mask = text[3] if any(s in text[3] for s in '!@*') else ''
                 reasonidx = 4 if mask != '' else 3
-            reason = ' '.join(text[reasonidx:])
             mask = parse_host_mask(text)
             if mask == '':
                 mask = nick + '!*@*'
-            bot.write(['MODE', channel, '+b', mask + '${bot.settings.channelmgnt.forwardchan}'])
+            bot.write(['MODE', channel, '+b', f'{mask}${bot.settings.channelmgnt.forwardchan}'])
         else:
             bot.reply('Access Denied. If in error, please contact the channel founder.')
         if dodeop:
             deopbot(trigger.sender, bot)
     else:
-        bot.reply('No ChanOps Found. Please ask for assistance in {}'.format(bot.settings.channelmgnt.support_channel))
+        bot.reply(f'No ChanOps Found. Please ask for assistance in {bot.settings.channelmgnt.support_channel}')
 
 
 @event('KICK')
