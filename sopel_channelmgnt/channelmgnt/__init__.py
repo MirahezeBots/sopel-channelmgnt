@@ -437,7 +437,6 @@ def fyckb(bot, trigger):
             dodeop = True
             text = trigger.group().split()
             nick = Identifier(text[1])
-            mask = text[2] if any(s in text[2] for s in '!@*') else ''
             mask = parse_host_mask(text)
             if mask == '':
                 mask = nick + '!*@*'
