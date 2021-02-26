@@ -166,7 +166,7 @@ def chanmode(bot, trigger):
 
 @require_chanmsg
 @commands('op')
-@example('.op Zppix')
+@example('.op nick')
 def op(bot, trigger):
     """Command to op users in a room. If no nick is given, Sopel will op the nick who sent the command."""
     makemodechange(bot, trigger, '+o', isusermode=True)
@@ -174,7 +174,7 @@ def op(bot, trigger):
 
 @require_chanmsg
 @commands('deop')
-@example('.deop Zppix')
+@example('.deop nick')
 def deop(bot, trigger):
     """Command to deop users in a room. If no nick is given, Sopel will deop the nick who sent the command."""
     makemodechange(bot, trigger, '-o', isusermode=True, selfsafe=True)
@@ -182,7 +182,7 @@ def deop(bot, trigger):
 
 @require_chanmsg
 @commands('voice')
-@example('.voice Zppix')
+@example('.voice nick')
 def voice(bot, trigger):
     """Command to voice users in a room. If no nick is given, Sopel will voice the nick who sent the command."""
     makemodechange(bot, trigger, '+v', isusermode=True)
@@ -190,7 +190,7 @@ def voice(bot, trigger):
 
 @require_chanmsg
 @commands('devoice')
-@example('.devoice Zppix')
+@example('.devoice nick')
 def devoice(bot, trigger):
     """Command to devoice users in a room. If no nick is given, the nick who sent the command will be devoiced."""
     makemodechange(bot, trigger, '-v', isusermode=True, selfsafe=True)
@@ -199,7 +199,7 @@ def devoice(bot, trigger):
 @require_chanmsg
 @commands('kick')
 @priority('high')
-@example('.kick Zppix')
+@example('.kick nick')
 def kick(bot, trigger):
     """Kick a user from the channel."""
     chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
@@ -260,7 +260,7 @@ def parse_host_mask(text):
 @require_chanmsg
 @commands('ban')
 @priority('high')
-@example('.ban Zppix')
+@example('.ban nick')
 def ban(bot, trigger):
     """Ban a user from the channel. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '+b', isbqmode=True)
@@ -268,7 +268,7 @@ def ban(bot, trigger):
 
 @require_chanmsg
 @commands('unban')
-@example('.unban Zppix')
+@example('.unban nick')
 def unban(bot, trigger):
     """Unban a user from the channel. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '-b', isbqmode=True)
@@ -276,7 +276,7 @@ def unban(bot, trigger):
 
 @require_chanmsg
 @commands('quiet')
-@example('.quiet Zppix')
+@example('.quiet nick')
 def quiet(bot, trigger):
     """Quiet a user. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '+q', isbqmode=True)
@@ -284,7 +284,7 @@ def quiet(bot, trigger):
 
 @require_chanmsg
 @commands('unquiet')
-@example('.unquiet Zppix')
+@example('.unquiet nick')
 def unquiet(bot, trigger):
     """Unquiet a user. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '-q', isbqmode=True)
