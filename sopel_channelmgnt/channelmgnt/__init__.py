@@ -58,15 +58,15 @@ def default_mask(trigger):
 def chanopget(channeldata, chanopsjson):
     """Get chanop data for the given channel."""
     chanops = []
-    if 'default' in chanopsjson.keys():
+    if 'default' in chanopsjson:
         defaultops = channelparse(channel='default', cachedjson=chanopsjson)
-        if 'chanops' in defaultops[0].keys():
+        if 'chanops' in defaultops[0]:
             chanops = chanops + defaultops[0]['chanops']
-    if 'inherits-from' in channeldata.keys():
+    if 'inherits-from' in channeldata:
         for x in channeldata['inherits-from']:
             y = channelparse(channel=x, cachedjson=chanopsjson)
             chanops = chanops + y[0]['chanops']
-    if 'chanops' in channeldata.keys():
+    if 'chanops' in channeldata:
         chanops = chanops + (channeldata['chanops'])
     if chanops == []:
         return False
@@ -76,11 +76,11 @@ def chanopget(channeldata, chanopsjson):
 def logchanget(channeldata, chanopsjson):
     """Get logging channel for the given channel."""
     log_channel = []
-    if 'default' in chanopsjson.keys():
+    if 'default' in chanopsjson:
         defaultchan = channelparse(channel='default', cachedjson=chanopsjson)
-        if 'log_channel' in defaultchan[0].keys():
+        if 'log_channel' in defaultchan[0]:
             log_channel = (defaultchan[0]['log_channel'])
-    if 'log_channel' in channeldata.keys():
+    if 'log_channel' in channeldata:
         log_channel = (channeldata['log_channel'])
     if log_channel == []:
         return False
@@ -89,7 +89,7 @@ def logchanget(channeldata, chanopsjson):
 
 def channelparse(channel, cachedjson):
     """Get json data for a specific channel."""
-    if channel in cachedjson.keys():
+    if channel in cachedjson:
         channeldata = cachedjson[channel]
         return channeldata, cachedjson
     return False
@@ -100,7 +100,7 @@ def get_chanops(channel, cachedjson):
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
         defaultops = channelparse(channel='default', cachedjson=cachedjson)
-        if 'chanops' in defaultops[0].keys():
+        if 'chanops' in defaultops[0]:
             return defaultops[0]['chanops']
         return False
     return chanopget(channeldata[0], channeldata[1])
@@ -111,7 +111,7 @@ def get_log_channel(channel, cachedjson):
     channeldata = channelparse(channel='default', cachedjson=cachedjson)
     if not channeldata:
         defaultchan = channelparse(channel=channel, cachedjson=cachedjson)
-        if 'log_channel' in defaultchan[0].keys():
+        if 'log_channel' in defaultchan[0]:
             return defaultchan[0]['log_channel']
         return False
     return logchanget(channeldata[0], channeldata[1])
