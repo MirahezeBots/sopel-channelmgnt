@@ -217,7 +217,7 @@ def kick(bot, trigger):
         nick = Identifier(text[1])
         reason = ' '.join(text[2:])
         if ',' in str(nick):
-            return bot.reply('Unable to kick. Kicking multiple users is not allowed.') 
+            return bot.reply('Unable to kick. Kicking multiple users is not allowed.')
         if '#' in str(nick):
             return bot.reply('Unable to kick. Use of # when kicking is not expected.')
         if nick != bot.config.core.nick and trigger.account in chanops:
@@ -268,7 +268,7 @@ def parse_host_mask(text):
 def ban(bot, trigger):
     """Ban a user from the channel. The bot must be a channel operator for this command to work."""
     if ',' in str(parse_host_mask(trigger.group().split())):
-        return bot.reply('Unable to ban. Banning multiple users is not allowed.') 
+        return bot.reply('Unable to ban. Banning multiple users is not allowed.')
     if '#' in str(parse_host_mask(trigger.group().split())):
         return bot.reply('Unable to ban. Use of # when banning is not expected.')
     makemodechange(bot, trigger, '+b', isbqmode=True)
@@ -280,7 +280,7 @@ def ban(bot, trigger):
 def unban(bot, trigger):
     """Unban a user from the channel. The bot must be a channel operator for this command to work."""
     if ',' in str(parse_host_mask(trigger.group().split())):
-        return bot.reply('Unable to ban. Banning multiple users is not allowed.') 
+        return bot.reply('Unable to ban. Banning multiple users is not allowed.')
     if '#' in str(parse_host_mask(trigger.group().split())):
         return bot.reply('Unable to ban. Use of # when banning is not expected.')
     makemodechange(bot, trigger, '-b', isbqmode=True)
@@ -325,7 +325,7 @@ def kickban(bot, trigger):
             return
         nick = Identifier(text[1])
         if ',' in str(nick):
-            return bot.reply('Unable to kickban. Kickbanning multiple users is not allowed.') 
+            return bot.reply('Unable to kickban. Kickbanning multiple users is not allowed.')
         if '#' in str(nick):
             return bot.reply('Unable to kickban. Use of # when kickbanning is not expected.')
         mask = text[2] if any(s in text[2] for s in '!@*') else ''
