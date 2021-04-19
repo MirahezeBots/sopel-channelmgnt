@@ -12,4 +12,4 @@ sopel-plugins.adminlist==1.0.5
 sopel-plugins.pingpong==1.0.4
 sopel-plugins.joinall==1.0.3
 pipdeptree==2.0.0
-MirahezeBot-Plugins==9.1.2
+MirahezeBot-Plugins==9.1.3
