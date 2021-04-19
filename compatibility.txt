@@ -10,6 +10,6 @@ sopel-modules.wolfram==0.5.0
 sopel-modules.urban==1.1.0
 sopel-plugins.adminlist==1.0.5
 sopel-plugins.pingpong==1.0.4
-sopel-plugins.joinall==1.0.2
+sopel-plugins.joinall==1.0.3
 pipdeptree==2.0.0
 MirahezeBot-Plugins==9.1.2
