@@ -10,7 +10,7 @@ with open('requirements.txt') as requirements_file:
 
 setup(
     name='sopel_plugins.channelmgnt',
-    version='2.0.2',
+    version='2.1.0',
     description='Channelmgnt plugin for Sopel',
     long_description=readme,
     long_description_content_type='text/markdown',  # This is important!

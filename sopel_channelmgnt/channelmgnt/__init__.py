@@ -58,15 +58,15 @@ def default_mask(trigger):
 def chanopget(channeldata, chanopsjson):
     """Get chanop data for the given channel."""
     chanops = []
-    if 'default' in chanopsjson.keys():
+    if 'default' in chanopsjson:
         defaultops = channelparse(channel='default', cachedjson=chanopsjson)
-        if 'chanops' in defaultops[0].keys():
+        if 'chanops' in defaultops[0]:
             chanops = chanops + defaultops[0]['chanops']
-    if 'inherits-from' in channeldata.keys():
+    if 'inherits-from' in channeldata:
         for x in channeldata['inherits-from']:
             y = channelparse(channel=x, cachedjson=chanopsjson)
             chanops = chanops + y[0]['chanops']
-    if 'chanops' in channeldata.keys():
+    if 'chanops' in channeldata:
         chanops = chanops + (channeldata['chanops'])
     if chanops == []:
         return False
@@ -76,11 +76,11 @@ def chanopget(channeldata, chanopsjson):
 def logchanget(channeldata, chanopsjson):
     """Get logging channel for the given channel."""
     log_channel = []
-    if 'default' in chanopsjson.keys():
+    if 'default' in chanopsjson:
         defaultchan = channelparse(channel='default', cachedjson=chanopsjson)
-        if 'log_channel' in defaultchan[0].keys():
+        if 'log_channel' in defaultchan[0]:
             log_channel = (defaultchan[0]['log_channel'])
-    if 'log_channel' in channeldata.keys():
+    if 'log_channel' in channeldata:
         log_channel = (channeldata['log_channel'])
     if log_channel == []:
         return False
@@ -89,7 +89,7 @@ def logchanget(channeldata, chanopsjson):
 
 def channelparse(channel, cachedjson):
     """Get json data for a specific channel."""
-    if channel in cachedjson.keys():
+    if channel in cachedjson:
         channeldata = cachedjson[channel]
         return channeldata, cachedjson
     return False
@@ -100,7 +100,7 @@ def get_chanops(channel, cachedjson):
     channeldata = channelparse(channel=channel, cachedjson=cachedjson)
     if not channeldata:
         defaultops = channelparse(channel='default', cachedjson=cachedjson)
-        if 'chanops' in defaultops[0].keys():
+        if 'chanops' in defaultops[0]:
             return defaultops[0]['chanops']
         return False
     return chanopget(channeldata[0], channeldata[1])
@@ -111,7 +111,7 @@ def get_log_channel(channel, cachedjson):
     channeldata = channelparse(channel='default', cachedjson=cachedjson)
     if not channeldata:
         defaultchan = channelparse(channel=channel, cachedjson=cachedjson)
-        if 'log_channel' in defaultchan[0].keys():
+        if 'log_channel' in defaultchan[0]:
             return defaultchan[0]['log_channel']
         return False
     return logchanget(channeldata[0], channeldata[1])
@@ -166,7 +166,7 @@ def chanmode(bot, trigger):
 
 @require_chanmsg
 @commands('op')
-@example('.op Zppix')
+@example('.op nick')
 def op(bot, trigger):
     """Command to op users in a room. If no nick is given, Sopel will op the nick who sent the command."""
     makemodechange(bot, trigger, '+o', isusermode=True)
@@ -174,7 +174,7 @@ def op(bot, trigger):
 
 @require_chanmsg
 @commands('deop')
-@example('.deop Zppix')
+@example('.deop nick')
 def deop(bot, trigger):
     """Command to deop users in a room. If no nick is given, Sopel will deop the nick who sent the command."""
     makemodechange(bot, trigger, '-o', isusermode=True, selfsafe=True)
@@ -182,7 +182,7 @@ def deop(bot, trigger):
 
 @require_chanmsg
 @commands('voice')
-@example('.voice Zppix')
+@example('.voice nick')
 def voice(bot, trigger):
     """Command to voice users in a room. If no nick is given, Sopel will voice the nick who sent the command."""
     makemodechange(bot, trigger, '+v', isusermode=True)
@@ -190,7 +190,7 @@ def voice(bot, trigger):
 
 @require_chanmsg
 @commands('devoice')
-@example('.devoice Zppix')
+@example('.devoice nick')
 def devoice(bot, trigger):
     """Command to devoice users in a room. If no nick is given, the nick who sent the command will be devoiced."""
     makemodechange(bot, trigger, '-v', isusermode=True, selfsafe=True)
@@ -199,7 +199,7 @@ def devoice(bot, trigger):
 @require_chanmsg
 @commands('kick')
 @priority('high')
-@example('.kick Zppix')
+@example('.kick nick')
 def kick(bot, trigger):
     """Kick a user from the channel."""
     chanops = get_chanops(str(trigger.sender), bot.memory['channelmgnt']['jdcache'])
@@ -264,7 +264,7 @@ def parse_host_mask(text):
 @require_chanmsg
 @commands('ban')
 @priority('high')
-@example('.ban Zppix')
+@example('.ban nick')
 def ban(bot, trigger):
     """Ban a user from the channel. The bot must be a channel operator for this command to work."""
     if ',' in str(parse_host_mask(trigger.group().split())):
@@ -276,7 +276,7 @@ def ban(bot, trigger):
 
 @require_chanmsg
 @commands('unban')
-@example('.unban Zppix')
+@example('.unban nick')
 def unban(bot, trigger):
     """Unban a user from the channel. The bot must be a channel operator for this command to work."""
     if ',' in str(parse_host_mask(trigger.group().split())):
@@ -288,7 +288,7 @@ def unban(bot, trigger):
 
 @require_chanmsg
 @commands('quiet')
-@example('.quiet Zppix')
+@example('.quiet nick')
 def quiet(bot, trigger):
     """Quiet a user. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '+q', isbqmode=True)
@@ -296,7 +296,7 @@ def quiet(bot, trigger):
 
 @require_chanmsg
 @commands('unquiet')
-@example('.unquiet Zppix')
+@example('.unquiet nick')
 def unquiet(bot, trigger):
     """Unquiet a user. The bot must be a channel operator for this command to work."""
     makemodechange(bot, trigger, '-q', isbqmode=True)

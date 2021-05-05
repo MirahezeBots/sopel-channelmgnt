@@ -14,7 +14,10 @@ name: "CodeQL"
 
 on:
   push:
-  pull_request:
+    branches:
+      - dev
+      - release
+  pull_request_target:
   schedule:
     - cron: '25 22 * * 6'
 
@@ -33,7 +36,7 @@ jobs:
 
     steps:
     - name: Cancel Previous Runs
-      uses: styfle/cancel-workflow-action@0.8.0
+      uses: styfle/cancel-workflow-action@0.9.0
       with:
         access_token: ${{ github.token }}
     - name: Checkout repository
